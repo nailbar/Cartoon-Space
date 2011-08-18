@@ -60,6 +60,16 @@ function frag(pos, rot, col, typ, sub) {
                     c.translate(-p[2].width * 0.5, -p[2].height * 0.5);
                     c.drawImage(p[2], 0, 0);
                     break;
+                case "hull4":
+                    c.rotate(this.pos.x * 0.01);
+                    c.translate(-p[14].width * 0.5, -p[14].height * 0.5);
+                    c.drawImage(p[14], 0, 0);
+                    break;
+                case "hull5":
+                    c.rotate(this.pos.x * 0.01);
+                    c.translate(-p[15].width * 0.5, -p[15].height * 0.5);
+                    c.drawImage(p[15], 0, 0);
+                    break;
                 case "engine1":
                     c.rotate(this.pos.x * 0.01);
                     c.translate(-p[3].width * 0.5, -p[3].height * 0.5);
@@ -74,6 +84,11 @@ function frag(pos, rot, col, typ, sub) {
                     c.rotate(this.pos.x * 0.01);
                     c.translate(-p[5].width * 0.5, -p[5].height * 0.5);
                     c.drawImage(p[5], 0, 0);
+                    break;
+                case "system2":
+                    c.rotate(this.pos.x * 0.01);
+                    c.translate(-p[16].width * 0.5, -p[16].height * 0.5);
+                    c.drawImage(p[16], 0, 0);
                     break;
                 case "blaster1":
                     c.rotate(this.pos.x * 0.01);
@@ -153,9 +168,12 @@ function frag(pos, rot, col, typ, sub) {
                             case "hull1": psiz = (p[0].width + p[0].height) / 4.0; break;
                             case "hull2": psiz = (p[1].width + p[1].height) / 4.0; break;
                             case "hull3": psiz = (p[2].width + p[2].height) / 4.0; break;
+                            case "hull4": psiz = (p[14].width + p[14].height) / 4.0; break;
+                            case "hull5": psiz = (p[15].width + p[15].height) / 4.0; break;
                             case "engine1": psiz = (p[3].width + p[3].height) / 4.0; break;
                             case "engine2": psiz = (p[4].width + p[4].height) / 4.0; break;
                             case "system1": psiz = (p[5].width + p[5].height) / 4.0; break;
+                            case "system2": psiz = (p[16].width + p[16].height) / 4.0; break;
                             case "blaster1": psiz = (p[8].width + p[8].height) / 4.0; break;
                             case "blaster1left": psiz = (p[6].width + p[6].height) / 4.0; break;
                             case "blaster1right": psiz = (p[7].width + p[7].height) / 4.0; break;
@@ -247,33 +265,44 @@ function ship(pos, rot, typ, col) {
         this.pts = 1;
         this.p = new Array();
         switch(id) {
-        case 0: // Default simple ship - with one blaster
+        case 0: // Team 1 light fighter
             this.p.push({part: "blaster1", x: 25.0, y: 0.0, hlt: 1.0, parent: 2});
             this.p.push({part: "engine1", x: -35.0, y: 0.0, hlt: 1.0, parent: 2});
             this.p.push({part: "hull1", x: 0.0, y: 0.0, hlt: 2.0, parent: 2});
             this.p.push({part: "system1", x: -15.0, y: 0.0, hlt: 1.0, parent: 2});
             break;
-        case 1: // Default simple ship - with two blasters
+        case 1: // Team 1 medium fighter
             this.p.push({part: "engine1", x: -35.0, y: 0.0, hlt: 1.0, parent: 1});
             this.p.push({part: "hull1", x: 0.0, y: 0.0, hlt: 2.0, parent: 1});
             this.p.push({part: "system1", x: -15.0, y: 0.0, hlt: 1.0, parent: 1});
             this.p.push({part: "blaster1left", x: -15.0, y: -22.0, hlt: 1.0, parent: 1});
             this.p.push({part: "blaster1right", x: -15.0, y: 22.0, hlt: 1.0, parent: 1});
             break;
-        case 2: // Small yellow ship - with one blaster
+        case 2: // Team 1 heavy fighter
+            this.p.push({part: "blaster1left", x: -20.0, y: -22.0, hlt: 1.0, parent: 6});
+            this.p.push({part: "blaster1right", x: -20.0, y: 22.0, hlt: 1.0, parent: 6});
+            this.p.push({part: "blaster1left", x: 15.0, y: -12.0, hlt: 1.0, parent: 6});
+            this.p.push({part: "blaster1right", x: 15.0, y: 12.0, hlt: 1.0, parent: 6});
+            this.p.push({part: "engine1", x: -43.0, y: 14.0, hlt: 1.0, parent: 7});
+            this.p.push({part: "engine1", x: -43.0, y: -14.0, hlt: 1.0, parent: 7});
+            this.p.push({part: "hull1", x: 0.0, y: 0.0, hlt: 2.0, parent: 6});
+            this.p.push({part: "hull3", x: -35.0, y: 0.0, hlt: 2.0, parent: 6});
+            this.p.push({part: "system1", x: -15.0, y: 0.0, hlt: 1.0, parent: 6});
+            break;
+        case 3: // Team 2 light fighter
             this.p.push({part: "blaster1", x: 30.0, y: 0.0, hlt: 1.0, parent: 2});
             this.p.push({part: "engine2", x: -25.0, y: 0.0, hlt: 1.0, parent: 2});
             this.p.push({part: "hull2", x: 0.0, y: 0.0, hlt: 2.0, parent: 2});
             this.p.push({part: "system1", x: 0.0, y: 0.0, hlt: 1.0, parent: 2});
             break;
-        case 3: // Small yellow ship - with two blasters
+        case 4: // Team 2 medium fighter
             this.p.push({part: "blaster1left", x: -10.0, y: -20.0, hlt: 1.0, parent: 3});
             this.p.push({part: "blaster1right", x: -10.0, y: 20.0, hlt: 1.0, parent: 3});
             this.p.push({part: "engine2", x: -25.0, y: 0.0, hlt: 1.0, parent: 3});
             this.p.push({part: "hull2", x: 0.0, y: 0.0, hlt: 2.0, parent: 3});
             this.p.push({part: "system1", x: 0.0, y: 0.0, hlt: 1.0, parent: 3});
             break;
-        case 4: // Small yellow ship - with three blasters
+        case 5: // Team 2 heavy fighter
             this.p.push({part: "blaster1", x: 30.0, y: 0.0, hlt: 1.0, parent: 4});
             this.p.push({part: "blaster1left", x: -10.0, y: -20.0, hlt: 1.0, parent: 4});
             this.p.push({part: "blaster1right", x: -10.0, y: 20.0, hlt: 1.0, parent: 4});
@@ -281,15 +310,28 @@ function ship(pos, rot, typ, col) {
             this.p.push({part: "hull2", x: 0.0, y: 0.0, hlt: 2.0, parent: 4});
             this.p.push({part: "system1", x: 0.0, y: 0.0, hlt: 1.0, parent: 4});
             break;
-        case 5: // Shielded ship - with two blasters
-            this.p.push({part: "blaster1left", x: 25.0, y: -18.0, hlt: 1.0, parent: 4});
-            this.p.push({part: "blaster1right", x: 25.0, y: 18.0, hlt: 1.0, parent: 4});
-            this.p.push({part: "engine1", x: -15.0, y: 15.0, hlt: 1.0, parent: 5});
-            this.p.push({part: "engine1", x: -15.0, y: -15.0, hlt: 1.0, parent: 5});
-            this.p.push({part: "hull1", x: 30.0, y: 0.0, hlt: 2.0, parent: 4});
-            this.p.push({part: "hull3", x: -5.0, y: 0.0, hlt: 1.5, parent: 4});
-            this.p.push({part: "system1", x: 25.0, y: 0.0, hlt: 1.0, parent: 4});
-            this.p.push({part: "shield1", x: 10.0, y: 0.0, hlt: 3.0, parent: 4});
+        case 6: // Team 3 light fighter
+            this.p.push({part: "blaster1left", x: 15.0, y: -10.0, hlt: 1.0, parent: 3});
+            this.p.push({part: "blaster1right", x: 15.0, y: 10.0, hlt: 1.0, parent: 3});
+            this.p.push({part: "engine2", x: -5.0, y: 0.0, hlt: 1.0, parent: 3});
+            this.p.push({part: "hull5", x: 0.0, y: 0.0, hlt: 1.0, parent: 3});
+            this.p.push({part: "system2", x: 20.0, y: 0.0, hlt: 1.0, parent: 3});
+            break;
+        case 7: // Team 3 medium fighter
+            this.p.push({part: "engine2", x: -25.0, y: 0.0, hlt: 1.0, parent: 2});
+            this.p.push({part: "blaster1", x: 40.0, y: 0.0, hlt: 1.0, parent: 2});
+            this.p.push({part: "hull4", x: 0.0, y: 0.0, hlt: 1.5, parent: 2});
+            this.p.push({part: "system2", x: 20.0, y: 0.0, hlt: 1.0, parent: 2});
+            this.p.push({part: "shield1", x: 0.0, y: 0.0, hlt: 3.0, parent: 2});
+            break;
+        case 8: // Team 3 heavy fighter
+            this.p.push({part: "engine2", x: -35.0, y: 0.0, hlt: 1.0, parent: 4});
+            this.p.push({part: "blaster1left", x: 5.0, y: -25.0, hlt: 1.0, parent: 4});
+            this.p.push({part: "blaster1right", x: 5.0, y: 25.0, hlt: 1.0, parent: 4});
+            this.p.push({part: "hull5", x: 30.0, y: 0.0, hlt: 1.0, parent: 3});
+            this.p.push({part: "hull4", x: -10.0, y: 0.0, hlt: 1.5, parent: 3});
+            this.p.push({part: "shield1", x: 0.0, y: 0.0, hlt: 3.0, parent: 4});
+            this.p.push({part: "system2", x: 30.0, y: 0.0, hlt: 1.0, parent: 3});
             break;
         }
     }
@@ -336,7 +378,17 @@ function ship(pos, rot, typ, col) {
             case "hull3":
                 c.translate(-p[2].width * 0.5, -p[2].height * 0.5);
                 c.drawImage(p[2], 0, 0);
-                this.wgt += 0.7;
+                this.wgt += 0.6;
+                break;
+            case "hull4":
+                c.translate(-p[14].width * 0.5, -p[14].height * 0.5);
+                c.drawImage(p[14], 0, 0);
+                this.wgt += 0.8;
+                break;
+            case "hull5":
+                c.translate(-p[15].width * 0.5, -p[15].height * 0.5);
+                c.drawImage(p[15], 0, 0);
+                this.wgt += 0.6;
                 break;
             case "engine1":
                 c.translate(-p[3].width * 0.5, -p[3].height * 0.5);
@@ -375,6 +427,12 @@ function ship(pos, rot, typ, col) {
             case "system1":
                 c.translate(-p[5].width * 0.5, -p[5].height * 0.5);
                 c.drawImage(p[5], 0, 0);
+                this.wgt += 0.2;
+                this.sys++;
+                break;
+            case "system2":
+                c.translate(-p[16].width * 0.5, -p[16].height * 0.5);
+                c.drawImage(p[16], 0, 0);
                 this.wgt += 0.2;
                 this.sys++;
                 break;
@@ -605,17 +663,10 @@ function init() {
     c = canvas.getContext('2d');
     
     // Load images
-    toload++;
-    totalload++;
-    p[0] = new Image();
-    p[0] = new Image();
-    p[0].onload = doneload();
-    p[0].src = "hull1.png";
-    toload++;
-    totalload++;
-    p[1] = new Image();
-    p[1].onload = doneload();
-    p[1].src = "hull2.png";
+    toload++; totalload++;
+    p[0] = new Image(); p[0].onload = doneload(); p[0].src = "hull1.png";
+    toload++; totalload++;
+    p[1] = new Image(); p[1].onload = doneload(); p[1].src = "hull2.png";
     toload++;
     totalload++;
     p[2] = new Image();
@@ -676,6 +727,12 @@ function init() {
     p[13] = new Image();
     p[13].onload = doneload();
     p[13].src = "shield1broken.png";
+    toload++; totalload++;
+    p[14] = new Image(); p[14].onload = doneload(); p[14].src = "hull4.png";
+    toload++; totalload++;
+    p[15] = new Image(); p[15].onload = doneload(); p[15].src = "hull5.png";
+    toload++; totalload++;
+    p[16] = new Image(); p[16].onload = doneload(); p[16].src = "system2.png";
     doneload();
 }
 
@@ -696,14 +753,10 @@ function loop() {
             var curship = 0;
             a = new Array();
             for(var i = 0; i < players; i++) {
-                curteam = i%5;
+                curteam = i%3;
                 
                 // Team 2 needs fewer ships to balance the game
-                if(curteam == 3) curteam = 0;
-                if(curteam == 4) curteam = 1;
-                if(curteam == 0) curship = Math.floor(Math.random() * 2);
-                else if(curteam == 1) curship = Math.floor(Math.random() * 3) + 2;
-                else curship = 5;
+                curship = Math.floor(Math.random() * 3) + curteam * 3;
                 a.push(new ship(
                     {x:Math.cos(curteam * Math.PI * 0.66 + i * 0.1) * 5000 + Math.random() * 500 - 250, y:Math.sin(curteam * Math.PI * 0.66 + i * 0.1) * 5000 + Math.random() * 500 - 250}, // Position
                     Math.random() * Math.PI * 2.0, // Direction
