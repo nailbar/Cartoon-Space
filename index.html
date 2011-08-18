@@ -1,0 +1,788 @@
+<html>
+<head>
+<script type='text/javascript'>
+var canvas;
+var c;
+var p_hull1;
+var p_hull2;
+var p_hull3;
+var p_engine1;
+var p_engine2;
+var p_system1;
+var p_blaster1;
+var p_blaster1left;
+var p_blaster1right;
+var p_blast1;
+var p_explosion1;
+var p_explosion2;
+var p_shield1;
+var p_shield1broken;
+var toload = 1;
+var totalload = 1;
+var zoom = 2;
+var zoomtrg = 2;
+var cam = {x: 0, y: 0};
+var waitforit = 50;
+var players = 1;
+var camid = 0;
+var waitcam = 0;
+
+function frag(pos, rot, col, typ, sub) {
+    this.pos = {x: 0, y: 0};
+    this.rot = 0;
+    this.lif = 0;
+    this.col = 0;
+    this.typ = 0;
+    this.sub = "";
+    
+    // Function for drawing this frag
+    this.drawFrag = function() {
+        if(this.lif > 0) {
+            c.save();
+            c.translate(this.pos.x, this.pos.y);
+            c.rotate(this.rot);
+            switch(this.typ) {
+            case 0: // Blast
+                c.translate(-p_blast1.width * 0.5, -p_blast1.height * 0.5);
+                c.drawImage(p_blast1, 0, 0);
+                break;
+            case 1: // Explosion
+                c.scale(3.0 / 20.0 * this.lif + 0.1, 3.0 / 20.0 * this.lif + 0.1);
+                c.translate(-p_explosion1.width * 0.5, -p_explosion1.height * 0.5);
+                c.drawImage(p_explosion1, 0, 0);
+                break;
+            case 2: // Engine fire
+                c.scale(2.0 / 10.0 * this.lif + 0.1, 2.0 / 10.0 * this.lif + 0.1);
+                c.translate(-p_explosion2.width * 0.5, -p_explosion2.height * 0.5);
+                c.drawImage(p_explosion2, 0, 0);
+                break;
+            case 3: // Part
+                switch(this.sub) {
+                case "hull1":
+                    c.rotate(this.pos.x * 0.01);
+                    c.translate(-p_hull1.width * 0.5, -p_hull1.height * 0.5);
+                    c.drawImage(p_hull1, 0, 0);
+                    break;
+                case "hull2":
+                    c.rotate(this.pos.x * 0.01);
+                    c.translate(-p_hull2.width * 0.5, -p_hull2.height * 0.5);
+                    c.drawImage(p_hull2, 0, 0);
+                    break;
+                case "hull3":
+                    c.rotate(this.pos.x * 0.01);
+                    c.translate(-p_hull3.width * 0.5, -p_hull3.height * 0.5);
+                    c.drawImage(p_hull3, 0, 0);
+                    break;
+                case "engine1":
+                    c.rotate(this.pos.x * 0.01);
+                    c.translate(-p_engine1.width * 0.5, -p_engine1.height * 0.5);
+                    c.drawImage(p_engine1, 0, 0);
+                    break;
+                case "engine2":
+                    c.rotate(this.pos.x * 0.01);
+                    c.translate(-p_engine2.width * 0.5, -p_engine2.height * 0.5);
+                    c.drawImage(p_engine2, 0, 0);
+                    break;
+                case "system1":
+                    c.rotate(this.pos.x * 0.01);
+                    c.translate(-p_system1.width * 0.5, -p_system1.height * 0.5);
+                    c.drawImage(p_system1, 0, 0);
+                    break;
+                case "blaster1":
+                    c.rotate(this.pos.x * 0.01);
+                    c.translate(-p_blaster1.width * 0.5, -p_blaster1.height * 0.5);
+                    c.drawImage(p_blaster1, 0, 0);
+                    break;
+                case "blaster1left":
+                    c.rotate(this.pos.x * 0.01);
+                    c.translate(-p_blaster1left.width * 0.5, -p_blaster1left.height * 0.5);
+                    c.drawImage(p_blaster1left, 0, 0);
+                    break;
+                case "blaster1right":
+                    c.rotate(this.pos.x * 0.01);
+                    c.translate(-p_blaster1right.width * 0.5, -p_blaster1right.height * 0.5);
+                    c.drawImage(p_blaster1right, 0, 0);
+                    break;
+                case "shield1":
+                    c.rotate(this.pos.x * 0.01);
+                    c.translate(-p_shield1broken.width * 0.5, -p_shield1broken.height * 0.5);
+                    c.drawImage(p_shield1broken, 0, 0);
+                    break;
+                }
+                break;
+            }
+            c.restore();
+        }
+    }
+    
+    // Move this frag
+    this.moveFrag = function() {
+        if(this.lif) {
+            this.lif--;
+            if(this.lif) {
+                
+                // Movement
+                switch(this.typ) {
+                case 0: // Blast
+                    this.pos.x += Math.cos(this.rot) * 30;
+                    this.pos.y += Math.sin(this.rot) * 30;
+                    break;
+                case 1: // Explosion
+                    this.pos.x += Math.cos(this.rot) * 5;
+                    this.pos.y += Math.sin(this.rot) * 5;
+                    break;
+                case 2: // Engine fire
+                    this.pos.x += Math.cos(this.rot) * 10;
+                    this.pos.y += Math.sin(this.rot) * 10;
+                    break;
+                case 3: // Part
+                    this.pos.x += Math.cos(this.rot) * 7;
+                    this.pos.y += Math.sin(this.rot) * 7;
+                    break;
+                }
+                
+                // Hit
+                var ppos;
+                var psiz;
+                var pdis;
+                var pcpos;
+                var pos;
+                var dis;
+                var prt;
+                if(this.typ == 0 && !waitforit) for(var i = 0; i < a.length; i++) if(a[i].col != this.col && a[i].pts && this.lif > 0) {
+                    
+                    // Check if bullet is even near this ship
+                    if(this.pos.x < a[i].pos.x + 50 && this.pos.x > a[i].pos.x - 50 && this.pos.y < a[i].pos.y + 50 && this.pos.y > a[i].pos.y - 50) {
+                        
+                        // Check what part of ship is hit
+                        pdis = 1000;
+                        prt = -1;
+                        for(var u = 0; u < a[i].p.length; u++) if(a[i].p[u].hlt > 0.0 && this.lif > 0) {
+                            ppos = {
+                                x: a[i].pos.x + a[i].nrm.x * a[i].p[u].x - a[i].nrm.y * a[i].p[u].y,
+                                y: a[i].pos.y + a[i].nrm.y * a[i].p[u].x + a[i].nrm.x * a[i].p[u].y
+                            };
+                            switch(a[i].p[u].part) {
+                            case "hull1": psiz = (p_hull1.width + p_hull1.height) / 4.0; break;
+                            case "hull2": psiz = (p_hull2.width + p_hull2.height) / 4.0; break;
+                            case "hull3": psiz = (p_hull3.width + p_hull3.height) / 4.0; break;
+                            case "engine1": psiz = (p_engine1.width + p_engine1.height) / 4.0; break;
+                            case "engine2": psiz = (p_engine2.width + p_engine2.height) / 4.0; break;
+                            case "system1": psiz = (p_system1.width + p_system1.height) / 4.0; break;
+                            case "blaster1": psiz = (p_blaster1.width + p_blaster1.height) / 4.0; break;
+                            case "blaster1left": psiz = (p_blaster1left.width + p_blaster1left.height) / 4.0; break;
+                            case "blaster1right": psiz = (p_blaster1right.width + p_blaster1right.height) / 4.0; break;
+                            case "shield1": psiz = (p_shield1.width + p_shield1.height) / 4.0; break;
+                            }
+                            pos = {x: this.pos.x - ppos.x, y: this.pos.y - ppos.y};
+                            dis = Math.sqrt(pos.x * pos.x + pos.y * pos.y) - psiz;
+                            if(dis < psiz && dis < pdis) {
+                                prt = u;
+                                pdis = dis;
+                                pcpos = {x: ppos.x, y: ppos.y};
+                            }
+                        }
+                        
+                        // If part is hit, add damage
+                        if(prt != -1) {
+                            this.lif = 0;
+                            
+                            // Create explosion
+                            a[i].p[prt].hlt -= Math.random() + 0.3;
+                            for(var u = 0; u < 3; u++) b.push(new frag(
+                                {x: this.pos.x, y: this.pos.y},
+                                Math.random() * 6.3,
+                                this.col,
+                                1
+                            ));
+                            
+                            // Detatch broken part
+                            if(a[i].p[prt].hlt <= 0.0) {
+                                b.push(new frag(
+                                    {x: pcpos.x, y: pcpos.y},
+                                    Math.random() * 6.3,
+                                    this.col,
+                                    3, a[i].p[prt].part
+                                ));
+                                a[i].p[prt].hlt = 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    if(pos && rot) {
+        this.pos = pos;
+        this.rot = rot;
+        if(col) this.col = col;
+        if(typ) this.typ = typ;
+        if(sub) this.sub = sub;
+        switch(this.typ) {
+        case 0: this.lif = 100; break; // Live for 100 frames
+        case 1: this.lif = 20; break; // Live for 10 frames
+        case 2: this.lif = 10; break; // Live for 10 frames
+        case 3: this.lif = 200; break; // Live for 200 frames
+        }
+    }
+}
+
+function ship(pos, rot, typ, col) {
+    this.pos = {x: 0, y: 0}; // Position
+    this.spd = {x: 0, y: 0}; // Velocity
+    this.nrm = {x: 1, y: 0}; // Normal (nose, based on rot)
+    this.rot = 0; // Degrees rotated
+    this.del = 0; // Rotation delta (how fast it's rotating)
+    this.col = 0; // Team color
+    this.wgt = 0; // Ship weight
+    this.brn = 0; // Are thrusters in use or not
+    this.acc = 0; // Acceleration
+    this.trn = 0; // Is ship turning in any direction
+    this.trg = 0; // Target ship ID
+    this.stt = 0; // AI state (0 = attack, 1 = evade)
+    this.fir = 0; // Ship is firing
+    this.lod = 0; // Weapons are loading
+    this.gns = 0; // Ship has weapons
+    this.sys = 0; // This has system
+    this.pts = 0; // Number of healthy parts
+    this.var = 0; // Variation in decision making
+    this.p = new Array(); // List of parts
+    
+    // Function for creating a new ship
+    this.createShip = function(id) {
+        
+        // Bogus numbers to prevent other ships from thinking this ship is already dead
+        this.wgt = 1;
+        this.acc = 1;
+        this.gns = 1;
+        this.sys = 1;
+        this.pts = 1;
+        this.p = new Array();
+        switch(id) {
+        case 0: // Default simple ship - with one blaster
+            this.p.push({part: "blaster1", x: 25.0, y: 0.0, hlt: 1.0, parent: 2});
+            this.p.push({part: "engine1", x: -35.0, y: 0.0, hlt: 1.0, parent: 2});
+            this.p.push({part: "hull1", x: 0.0, y: 0.0, hlt: 2.0, parent: 2});
+            this.p.push({part: "system1", x: -15.0, y: 0.0, hlt: 1.0, parent: 2});
+            break;
+        case 1: // Default simple ship - with two blasters
+            this.p.push({part: "engine1", x: -35.0, y: 0.0, hlt: 1.0, parent: 1});
+            this.p.push({part: "hull1", x: 0.0, y: 0.0, hlt: 2.0, parent: 1});
+            this.p.push({part: "system1", x: -15.0, y: 0.0, hlt: 1.0, parent: 1});
+            this.p.push({part: "blaster1left", x: -15.0, y: -22.0, hlt: 1.0, parent: 1});
+            this.p.push({part: "blaster1right", x: -15.0, y: 22.0, hlt: 1.0, parent: 1});
+            break;
+        case 2: // Small yellow ship - with one blaster
+            this.p.push({part: "blaster1", x: 30.0, y: 0.0, hlt: 1.0, parent: 2});
+            this.p.push({part: "engine2", x: -25.0, y: 0.0, hlt: 1.0, parent: 2});
+            this.p.push({part: "hull2", x: 0.0, y: 0.0, hlt: 2.0, parent: 2});
+            this.p.push({part: "system1", x: 0.0, y: 0.0, hlt: 1.0, parent: 2});
+            break;
+        case 3: // Small yellow ship - with two blasters
+            this.p.push({part: "blaster1left", x: -10.0, y: -20.0, hlt: 1.0, parent: 3});
+            this.p.push({part: "blaster1right", x: -10.0, y: 20.0, hlt: 1.0, parent: 3});
+            this.p.push({part: "engine2", x: -25.0, y: 0.0, hlt: 1.0, parent: 3});
+            this.p.push({part: "hull2", x: 0.0, y: 0.0, hlt: 2.0, parent: 3});
+            this.p.push({part: "system1", x: 0.0, y: 0.0, hlt: 1.0, parent: 3});
+            break;
+        case 4: // Small yellow ship - with three blasters
+            this.p.push({part: "blaster1", x: 30.0, y: 0.0, hlt: 1.0, parent: 4});
+            this.p.push({part: "blaster1left", x: -10.0, y: -20.0, hlt: 1.0, parent: 4});
+            this.p.push({part: "blaster1right", x: -10.0, y: 20.0, hlt: 1.0, parent: 4});
+            this.p.push({part: "engine2", x: -25.0, y: 0.0, hlt: 1.0, parent: 4});
+            this.p.push({part: "hull2", x: 0.0, y: 0.0, hlt: 2.0, parent: 4});
+            this.p.push({part: "system1", x: 0.0, y: 0.0, hlt: 1.0, parent: 4});
+            break;
+        case 5: // Shielded ship - with two blasters
+            this.p.push({part: "blaster1left", x: 25.0, y: -18.0, hlt: 1.0, parent: 4});
+            this.p.push({part: "blaster1right", x: 25.0, y: 18.0, hlt: 1.0, parent: 4});
+            this.p.push({part: "engine1", x: -15.0, y: 15.0, hlt: 1.0, parent: 5});
+            this.p.push({part: "engine1", x: -15.0, y: -15.0, hlt: 1.0, parent: 5});
+            this.p.push({part: "hull1", x: 30.0, y: 0.0, hlt: 2.0, parent: 4});
+            this.p.push({part: "hull3", x: -5.0, y: 0.0, hlt: 1.5, parent: 4});
+            this.p.push({part: "system1", x: 25.0, y: 0.0, hlt: 1.0, parent: 4});
+            this.p.push({part: "shield1", x: 10.0, y: 0.0, hlt: 3.0, parent: 4});
+            break;
+        }
+    }
+    
+    // Function for drawing this ship
+    this.drawShip = function(pos, rot) {
+        if(!pos) pos = this.pos;
+        if(!rot) rot = this.rot;
+        this.wgt = 0;
+        this.acc = 0;
+        this.gns = 0; // Ship has weapons
+        this.sys = 0; // This has system
+        this.pts = 0; // Number of healthy parts
+        switch(this.col) {
+        case 0: c.strokeStyle = "rgb(0,0,0)"; break;
+        case 1: c.strokeStyle = "rgb(255,0,0)"; break;
+        case 2: c.strokeStyle = "rgb(0,225,0)"; break;
+        case 3: c.strokeStyle = "rgb(235,215,0)"; break;
+        case 4: c.strokeStyle = "rgb(0,0,255)"; break;
+        case 5: c.strokeStyle = "rgb(255,0,255)"; break;
+        case 6: c.strokeStyle = "rgb(0,255,255)"; break;
+        case 7: c.strokeStyle = "rgb(150,150,150)"; break;
+        }
+//         c.strokeRect(this.pos.x - 50 ,this.pos.y - 50, 100, 100);
+        for(var i = 0; i < this.p.length; i++) if(this.p[i].hlt > 0.0) if(this.p[this.p[i].parent].hlt > 0.0) {
+            this.pts++;
+            c.save();
+            c.translate(
+                pos.x + Math.cos(rot) * this.p[i].x - Math.sin(rot) * this.p[i].y,
+                pos.y + Math.sin(rot) * this.p[i].x + Math.cos(rot) * this.p[i].y
+            );
+            c.rotate(rot);
+            switch(this.p[i].part) {
+            case "hull1":
+                c.translate(-p_hull1.width * 0.5, -p_hull1.height * 0.5);
+                c.drawImage(p_hull1, 0, 0);
+                this.wgt += 0.8;
+                break;
+            case "hull2":
+                c.translate(-p_hull2.width * 0.5, -p_hull2.height * 0.5);
+                c.drawImage(p_hull2, 0, 0);
+                this.wgt += 0.7;
+                break;
+            case "hull3":
+                c.translate(-p_hull3.width * 0.5, -p_hull3.height * 0.5);
+                c.drawImage(p_hull3, 0, 0);
+                this.wgt += 0.7;
+                break;
+            case "engine1":
+                c.translate(-p_engine1.width * 0.5, -p_engine1.height * 0.5);
+                c.drawImage(p_engine1, 0, 0);
+                this.wgt += 0.2;
+                this.acc += 1.0;
+                if(this.brn && Math.random() < 0.3) {
+                    b.push(new frag(
+                        {
+                            x: this.pos.x + this.nrm.x * (this.p[i].x - 15.0) - this.nrm.y * this.p[i].y,
+                            y: pos.y + this.nrm.y * (this.p[i].x - 15.0) + this.nrm.x * this.p[i].y
+                        },
+                        this.rot + Math.PI + Math.random() * 1.4 - 0.7,
+                        this.col,
+                        2
+                    )); 
+                }
+                break;
+            case "engine2":
+                c.translate(-p_engine2.width * 0.5, -p_engine2.height * 0.5);
+                c.drawImage(p_engine2, 0, 0);
+                this.wgt += 0.3;
+                this.acc += 1.2;
+                if(this.brn && Math.random() < 0.3) {
+                    b.push(new frag(
+                        {
+                            x: this.pos.x + this.nrm.x * (this.p[i].x - 25.0) - this.nrm.y * this.p[i].y,
+                            y: pos.y + this.nrm.y * (this.p[i].x - 25.0) + this.nrm.x * this.p[i].y
+                        },
+                        this.rot + Math.PI + Math.random() * 1.4 - 0.7,
+                        this.col,
+                        2
+                    )); 
+                }
+                break;
+            case "system1":
+                c.translate(-p_system1.width * 0.5, -p_system1.height * 0.5);
+                c.drawImage(p_system1, 0, 0);
+                this.wgt += 0.2;
+                this.sys++;
+                break;
+            case "blaster1":
+                c.translate(-p_blaster1.width * 0.5, -p_blaster1.height * 0.5);
+                c.drawImage(p_blaster1, 0, 0);
+                this.wgt += 0.2;
+                this.gns++;
+                break;
+            case "blaster1left":
+                c.translate(-p_blaster1left.width * 0.5, -p_blaster1left.height * 0.5);
+                c.drawImage(p_blaster1left, 0, 0);
+                this.wgt += 0.2;
+                this.gns++;
+                break;
+            case "blaster1right":
+                c.translate(-p_blaster1right.width * 0.5, -p_blaster1right.height * 0.5);
+                c.drawImage(p_blaster1right, 0, 0);
+                this.wgt += 0.2;
+                this.gns++;
+                break;
+            case "shield1":
+                c.translate(-p_shield1.width * 0.5, -p_shield1.height * 0.5);
+                c.drawImage(p_shield1, 0, 0);
+                this.wgt += 2.5;
+                break;
+            }
+            c.restore();
+        } else {
+            this.p[i].hlt = 0;
+            
+            // Detatch broken part
+            b.push(new frag(
+                {
+                    x: this.pos.x + this.nrm.x * this.p[i].x - this.nrm.y * this.p[i].y,
+                    y: this.pos.y + this.nrm.y * this.p[i].x + this.nrm.x * this.p[i].y
+                },
+                Math.random() * 6.3,
+                this.col,
+                3, this.p[i].part
+            ));
+        }
+    }
+    
+    // Move this ship
+    this.moveShip = function() {
+        if(this.wgt) {
+            
+            // Movement
+            this.pos.x += this.spd.x;
+            this.pos.y += this.spd.y;
+            this.rot += this.del;
+            this.nrm = {x: Math.cos(this.rot), y: Math.sin(this.rot)};
+            
+            // Acceleration
+            if(this.brn && this.acc > 0) {
+                this.spd.x += this.nrm.x * (this.acc / this.wgt) * 0.8;
+                this.spd.y += this.nrm.y * (this.acc / this.wgt) * 0.8;
+            }
+            
+            // Turning
+            if(this.trn && this.acc > 0) {
+                this.del += this.trn * (this.acc / this.wgt) * 0.02;
+            }
+            
+            // Friction (I know, it's fake space)
+            //  * Apply drifting for crippled ships, though
+            if(this.sys && this.acc) {
+                this.spd.x *= 0.97;
+                this.spd.y *= 0.97;
+                this.del *= 0.9;
+            }
+            
+            // Shooting
+            if(this.gns) {
+                if(this.lod > 0) this.lod--;
+                if(this.fir && this.lod <= 0) {
+                    this.lod = 15; // Load time 15 frames
+                    
+                    // Create bullets
+                    for(i = 0; i < this.p.length; i++) if(this.p[i].hlt > 0 && (this.p[i].part == "blaster1" || this.p[i].part == "blaster1left" || this.p[i].part == "blaster1right")) {
+                        b.push(new frag(
+                            {
+                                x: this.pos.x + this.nrm.x * this.p[i].x - this.nrm.y * this.p[i].y,
+                                y: this.pos.y + this.nrm.y * this.p[i].x + this.nrm.x * this.p[i].y
+                            },
+                            this.rot,
+                            this.col
+                        ));
+                    }
+                }
+            }
+        }
+    }
+    
+    // Perform AI tasks
+    this.thinkShip = function() {
+        if(!this.sys || waitforit) {
+            this.brn = 0;
+            this.fir = 0;
+            this.trn = 0;
+            return;
+        }
+        
+        // Don't follow a disabled target
+        if(!a[this.trg].sys || !a[this.trg].gns || !a[this.trg].acc) this.trg = Math.floor(Math.random() * a.length);
+        
+        // Follow target
+        if(a[this.trg].wgt && a[this.trg].col != this.col) {
+            
+            // Get targets position relative to self
+            var pos = {
+                x: a[this.trg].pos.x - this.pos.x,
+                y: a[this.trg].pos.y - this.pos.y
+            };
+            
+            // Get distance and normal to target
+            var dis = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
+            
+            // Look for closer target if too far
+            if(dis > 2000) {
+                var tmptrg = Math.floor(Math.random() * a.length);
+                if(a[tmptrg].sys && a[tmptrg].gns && a[tmptrg].acc && a[tmptrg].wgt && a[tmptrg].col != this.col) {
+                    var tmppos = {
+                        x: a[tmptrg].pos.x - this.pos.x,
+                        y: a[tmptrg].pos.y - this.pos.y
+                    };
+                    var tmpdis = Math.sqrt(tmppos.x * tmppos.x + tmppos.y * tmppos.y);
+                    if(tmpdis < dis) {
+                        this.trg = tmptrg;
+                        pos = tmppos;
+                        dis = tmpdis;
+                    }
+                }
+            }
+            
+            // Calculate normal towards target
+            if(dis) var nrm = {x: pos.x / dis, y: pos.y / dis};
+            else var nrm = {x: 1, y: 0};
+            
+            // Draw a target indicator
+            c.beginPath();
+            c.moveTo(this.pos.x + nrm.x * 70 ,this.pos.y + nrm.y * 70);
+            c.lineTo(this.pos.x + nrm.x * 90 ,this.pos.y + nrm.y * 90);
+            c.closePath();
+            c.stroke();
+            
+            // Get extruded dot value to target
+            var dot = this.nrm.x * -nrm.y + this.nrm.y * nrm.x;
+            
+            // Get normal dot value to target
+            var dot2 = this.nrm.x * nrm.x + this.nrm.y * nrm.y;
+            
+            // Follow target or evade it
+            if(dis > 700 + this.var) {
+                this.stt = 0;
+                this.var = Math.random() * 400 - 200;
+            } else if(dis < 500 + this.var) {
+                this.stt = 1;
+                this.var = Math.random() * 400 - 200;
+            }
+            
+            // Always evade if no weapons
+            if(!this.gns) this.stt = 1;
+            
+            // Follow mode
+            if(this.stt == 0) {
+                
+                // If target is to the right, turn right, and vice versa
+                //  * Don't turn with full force if target is already in front of ship and still turning towards it (reduces swaying)
+                if(dot2 > 0.0) {
+                    if(dot > 0.0) this.trn = -dot;
+                    else this.trn = -dot;
+                } else {
+                    if(dot > 0.0) this.trn = -1.0;
+                    else this.trn = 1.0;
+                }
+                
+                // Accelerate if target is in front of ship
+                if(dot2 > 0.7) this.brn = 1;
+                else this.brn = 0;
+                
+                // Shoot target if within range
+                if(dis < 900 + this.var && dot2 > 0.9) this.fir = 1;
+                else this.fir = 0;
+            
+            // Evade target if too close
+            } else if(this.stt == 1) {
+                this.fir = 0;
+                
+                // If target is to the right, turn right, and vice versa
+                if(dot2 > 0.0) {
+                    if(dot > 0.0) this.trn = 1.0;
+                    else this.trn = -1.0;
+                } else {
+                    
+                    // Don't turn with full force if target is already behind the ship (reduces swaying)
+                    if(dot > 0.0) this.trn = dot;
+                    else this.trn = dot;
+                }
+                
+                // Accelerate if target is behind the ship
+                if(dot < 0.5) this.brn = 1;
+                else this.brn = 0;
+            }
+        
+        // Find new target
+        } else {
+            this.trg = Math.floor(Math.random() * a.length);
+        }
+    }
+    
+    // Init ship
+    if(pos) this.pos = pos;
+    if(rot) this.rot = rot;
+    this.createShip(typ);
+    if(col) this.col = col;
+    this.trg = Math.floor(Math.random() * a.length);
+}
+var a = new Array();
+a.push(new ship({x:0, y:0}, 0, Math.floor(Math.random() * 6),0));
+var b = new Array();
+
+function init() {
+    
+    // Get canvas
+    canvas = document.getElementById('canvas');
+    c = canvas.getContext('2d');
+    
+    // Load images
+    toload++;
+    totalload++;
+    p_hull1 = new Image();
+    p_hull1.onload = doneload();
+    p_hull1.src = "hull1.png";
+    toload++;
+    totalload++;
+    p_hull2 = new Image();
+    p_hull2.onload = doneload();
+    p_hull2.src = "hull2.png";
+    toload++;
+    totalload++;
+    p_hull3 = new Image();
+    p_hull3.onload = doneload();
+    p_hull3.src = "hull3.png";
+    toload++;
+    totalload++;
+    p_engine1 = new Image();
+    p_engine1.onload = doneload();
+    p_engine1.src = "engine1.png";
+    toload++;
+    totalload++;
+    p_engine2 = new Image();
+    p_engine2.onload = doneload();
+    p_engine2.src = "engine2.png";
+    toload++;
+    totalload++;
+    p_system1 = new Image();
+    p_system1.onload = doneload();
+    p_system1.src = "system1.png";
+    toload++;
+    totalload++;
+    p_blaster1left = new Image();
+    p_blaster1left.onload = doneload();
+    p_blaster1left.src = "blaster1left.png";
+    toload++;
+    totalload++;
+    p_blaster1 = new Image();
+    p_blaster1.onload = doneload();
+    p_blaster1.src = "blaster1.png";
+    toload++;
+    totalload++;
+    p_blaster1right = new Image();
+    p_blaster1right.onload = doneload();
+    p_blaster1right.src = "blaster1right.png";
+    toload++;
+    totalload++;
+    p_blast1 = new Image();
+    p_blast1.onload = doneload();
+    p_blast1.src = "blast1.png";
+    toload++;
+    totalload++;
+    p_explosion1 = new Image();
+    p_explosion1.onload = doneload();
+    p_explosion1.src = "explosion1.png";
+    toload++;
+    totalload++;
+    p_explosion2 = new Image();
+    p_explosion2.onload = doneload();
+    p_explosion2.src = "explosion2.png";
+    toload++;
+    totalload++;
+    p_shield1 = new Image();
+    p_shield1.onload = doneload();
+    p_shield1.src = "shield1.png";
+    toload++;
+    totalload++;
+    p_shield1broken = new Image();
+    p_shield1broken.onload = doneload();
+    p_shield1broken.src = "shield1broken.png";
+    doneload();
+}
+
+// Draw loading graph and start loop when done
+function doneload() {
+    toload--;
+    if(!toload) setInterval(loop, 25);
+}
+
+// The main loop
+function loop() {
+    if(waitforit > 0) {
+        waitforit--;
+        zoomtrg = zoomtrg * 0.99;
+        if(waitforit <= 0) {
+            players = Math.floor(Math.random() * 10) + 2;
+            var curteam = 0;
+            var curship = 0;
+            a = new Array();
+            for(var i = 0; i < players; i++) {
+                curteam = i%5;
+                
+                // Team 2 needs fewer ships to balance the game
+                if(curteam == 3) curteam = 0;
+                if(curteam == 4) curteam = 1;
+                if(curteam == 0) curship = Math.floor(Math.random() * 2);
+                else if(curteam == 1) curship = Math.floor(Math.random() * 3) + 2;
+                else curship = 5;
+                a.push(new ship(
+                    {x:Math.cos(curteam * Math.PI * 0.66 + i * 0.1) * 5000 + Math.random() * 500 - 250, y:Math.sin(curteam * Math.PI * 0.66 + i * 0.1) * 5000 + Math.random() * 500 - 250}, // Position
+                    Math.random() * Math.PI * 2.0, // Direction
+                    curship, // Ship configuration
+                    curteam // Team
+                ));
+            }
+            b = new Array();
+            camid = Math.floor(Math.random() * 3);
+            cam = a[camid].pos;
+            zoomtrg = 1.0;
+            waitcam = 0;
+        }
+    } else waitforit = 0;
+
+    // Clear background
+    c.fillStyle = "rgb(240,240,250)";
+    c.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Camera follows a[camid].pos and scene is zoomed out to view both a[camid] and its target
+    //  * camid selects a healthy ship
+    if(!a[camid].sys || !a[camid].gns || !a[camid].acc) {
+        camid = Math.floor(Math.random() * a.length);
+        waitcam = 50; // Wait 50 framse until view switch
+    } else if(waitcam < 1) {
+        cam = a[camid].pos;
+        if(!waitforit) {
+            zoomtrg = 1.0 + Math.sqrt((a[a[camid].trg].pos.x - a[camid].pos.x) * (a[a[camid].trg].pos.x - a[camid].pos.x) + (a[a[camid].trg].pos.y - a[camid].pos.y) * (a[a[camid].trg].pos.y - a[camid].pos.y)) * 0.0025;
+            if(zoomtrg > 4.0) zoomtrg = 4.0;
+        }
+    } else waitcam--;
+    zoom = zoom + (zoomtrg - zoom) * 0.1;
+    c.save();
+    c.scale(1 / zoom, 1 / zoom);
+    c.translate(-cam.x + canvas.width * 0.5 * zoom,-cam.y + canvas.height * 0.5 * zoom);
+    
+    var teams = new Array(0,0,0,0,0,0,0);
+    for(var i = 0; i < a.length; i++) {
+        c.save();
+        a[i].moveShip();
+        a[i].drawShip();
+        a[i].thinkShip();
+        c.restore();
+        if(a[i].sys && a[i].gns && a[i].acc) teams[a[i].col]++;
+    }
+    
+    var tosplice = new Array();
+    for(var i = 0; i < b.length; i++) {
+        c.save();
+        b[i].moveFrag();
+        b[i].drawFrag();
+        c.restore();
+        if(b[i].lif <= 1) tosplice.push(i);
+    }
+    if(tosplice.length) for(var i = tosplice.length - 1; i >= 0; i--) b.splice(tosplice[i], 1);
+    c.restore();
+    
+    // Restart game
+    var multi = 0;
+    for(var i = 0; i < teams.length; i++) if(teams[i]) multi++;
+    if(multi < 2 && waitforit <= 0)  waitforit = 200;
+    else document.getElementById('asdf').innerHTML = "Ships per team: " + teams + "<br/>Teams left: " + multi;
+}
+</script>
+</head>
+<body onload='init()'>
+<canvas id="canvas" width='1200' height='800'></canvas>
+<p id="asdf"></p>
+</body>
+</html>
