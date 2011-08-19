@@ -17,6 +17,9 @@ var waitcam = 0;
 // User input
 var hascontrol = 0;
 var isshooting = false;
+var isaccelerating = false;
+var iskeyboardcontrol = false;
+var isturning = 0;
 var trg = {x: 0, y: 0};
 
 var part = {
@@ -462,8 +465,8 @@ function ship(pos, rot, typ, col) {
                 Math.random() * 6.3,
                 this.col,
                 3, this.p[i].part,
-                a[i].del + Math.random() * 0.2 - 0.1,
-                {x: this.spd.x + Math.random() * 8.0 - 4.0, y: this.spd.y + Math.random() * 8.0 - 4.0}
+                a[i].del + Math.random() * 0.1 - 0.5,
+                {x: this.spd.x + Math.random() * 2.0 - 1.0, y: this.spd.y + Math.random() * 2.0 - 1.0}
             ));
         }
         
@@ -601,10 +604,12 @@ function ship(pos, rot, typ, col) {
             c.stroke();
             
             // Get human input
-            if(followed && hascontrol) pos = trg;
-            dis = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
-            if(dis) nrm = {x: pos.x / dis, y: pos.y / dis};
-            else nrm = {x: 1, y: 0};
+            if(followed && hascontrol && !iskeyboardcontrol) {
+                pos = trg;
+                dis = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
+                if(dis) nrm = {x: pos.x / dis, y: pos.y / dis};
+                else nrm = {x: 1, y: 0};
+            }
             
             // Get extruded dot value to target
             var dot = this.nrm.x * -nrm.y + this.nrm.y * nrm.x;
@@ -643,8 +648,14 @@ function ship(pos, rot, typ, col) {
                 if(dis < 900 + this.var2 * 500 && dot2 > 0.9) this.fir = 1;
                 else this.fir = 0;
                 
-                // Get shooting for human controlled ship
-                if(followed && hascontrol) this.fir = isshooting;
+                // Get shooting and turning for human controlled ship
+                if(followed && hascontrol) {
+                    this.fir = isshooting;
+                    if(iskeyboardcontrol) {
+                        this.trn = isturning;
+                        this.brn = isaccelerating;
+                    }
+                }
             
             // Evade target if too close
             } else if(this.stt == 1) {
@@ -817,14 +828,47 @@ function movetarget(e) {
 function startshooting() {
     if(hascontrol) isshooting = true;
     hascontrol = 500;
+    iskeyboardcontrol = false;
 }
 function stopshooting() {
     isshooting = false;
 }
+function startkeyinput(e) {
+    switch(e.keyCode) {
+    case 81:
+        if(hascontrol) isshooting = true;
+        iskeyboardcontrol = true;
+        hascontrol = 500;
+        break;
+    case 73:
+        if(hascontrol) isaccelerating = true;
+        iskeyboardcontrol = true;
+        hascontrol = 500;
+        break;
+    case 74:
+        if(hascontrol) isturning = -1;
+        iskeyboardcontrol = true;
+        hascontrol = 500;
+        break;
+    case 76:
+        if(hascontrol) isturning = 1;
+        iskeyboardcontrol = true;
+        hascontrol = 500;
+        break;
+    }
+}
+function stopkeyinput(e) {
+    switch(e.keyCode) {
+    case 81: isshooting = false; break;
+    case 73: isaccelerating = false; break;
+    case 74: isturning = 0; break;
+    case 76: isturning = 0; break;
+    }
+}
 </script>
 </head>
-<body onload='init()' onmouseup='stopshooting(event)' style='margin: 0px;'>
+<body onload='init()' onmouseup='stopshooting(event)' style='margin: 0px;' onkeydown='startkeyinput(event)' onkeyup='stopkeyinput(event)'>
 <canvas id="canvas" width='1200' height='800' onmousedown='startshooting()' onmousemove='movetarget(event)'></canvas>
-<p id="asdf"></p><p id="debug"></p>
+<p id="asdf"></p><p id="debug">Accelerate: I, Turn left: J, Turn right: L, Fire: Q</p>
 </body>
 </html>
