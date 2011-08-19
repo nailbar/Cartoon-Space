@@ -352,35 +352,14 @@ function ship(pos, rot, typ, col) {
                 pos.y + Math.sin(rot) * this.p[i].x + Math.cos(rot) * this.p[i].y
             );
             c.rotate(rot);
+            part.draw(part.id(this.p[i].part));
             switch(this.p[i].part) {
-            case "hull1":
-                c.translate(-p[0].width * 0.5, -p[0].height * 0.5);
-                c.drawImage(p[0], 0, 0);
-                this.wgt += 0.8;
-                break;
-            case "hull2":
-                c.translate(-p[1].width * 0.5, -p[1].height * 0.5);
-                c.drawImage(p[1], 0, 0);
-                this.wgt += 0.7;
-                break;
-            case "hull3":
-                c.translate(-p[2].width * 0.5, -p[2].height * 0.5);
-                c.drawImage(p[2], 0, 0);
-                this.wgt += 0.6;
-                break;
-            case "hull4":
-                c.translate(-p[14].width * 0.5, -p[14].height * 0.5);
-                c.drawImage(p[14], 0, 0);
-                this.wgt += 0.8;
-                break;
-            case "hull5":
-                c.translate(-p[15].width * 0.5, -p[15].height * 0.5);
-                c.drawImage(p[15], 0, 0);
-                this.wgt += 0.6;
-                break;
+            case "hull1": this.wgt += 0.8; break;
+            case "hull2": this.wgt += 0.7; break;
+            case "hull3": this.wgt += 0.6; break;
+            case "hull4": this.wgt += 0.8; break;
+            case "hull5": this.wgt += 0.6; break;
             case "engine1":
-                c.translate(-p[3].width * 0.5, -p[3].height * 0.5);
-                c.drawImage(p[3], 0, 0);
                 this.wgt += 0.2;
                 this.acc += 1.0;
                 if(this.brn && Math.random() < 0.3) {
@@ -396,8 +375,6 @@ function ship(pos, rot, typ, col) {
                 }
                 break;
             case "engine2":
-                c.translate(-p[4].width * 0.5, -p[4].height * 0.5);
-                c.drawImage(p[4], 0, 0);
                 this.wgt += 0.3;
                 this.acc += 1.2;
                 if(this.brn && Math.random() < 0.3) {
@@ -413,38 +390,26 @@ function ship(pos, rot, typ, col) {
                 }
                 break;
             case "system1":
-                c.translate(-p[5].width * 0.5, -p[5].height * 0.5);
-                c.drawImage(p[5], 0, 0);
                 this.wgt += 0.2;
                 this.sys++;
                 break;
             case "system2":
-                c.translate(-p[16].width * 0.5, -p[16].height * 0.5);
-                c.drawImage(p[16], 0, 0);
                 this.wgt += 0.2;
                 this.sys++;
                 break;
             case "blaster1":
-                c.translate(-p[8].width * 0.5, -p[8].height * 0.5);
-                c.drawImage(p[8], 0, 0);
                 this.wgt += 0.2;
                 this.gns++;
                 break;
             case "blaster1left":
-                c.translate(-p[6].width * 0.5, -p[6].height * 0.5);
-                c.drawImage(p[6], 0, 0);
                 this.wgt += 0.2;
                 this.gns++;
                 break;
             case "blaster1right":
-                c.translate(-p[7].width * 0.5, -p[7].height * 0.5);
-                c.drawImage(p[7], 0, 0);
                 this.wgt += 0.2;
                 this.gns++;
                 break;
             case "shield1":
-                c.translate(-p[12].width * 0.5, -p[12].height * 0.5);
-                c.drawImage(p[12], 0, 0);
                 this.wgt += 2.5;
                 break;
             }
