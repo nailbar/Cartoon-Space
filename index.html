@@ -469,16 +469,17 @@ function ship(pos, rot, typ, col) {
             if(!this.respawn) this.respawn = 150;
             else this.respawn--;
             if(!this.respawn) {
+                var deg = Math.random() * Math.PI * 2.0;
                 this.col = Math.floor(Math.random() * 3);
-                this.pos = {x:Math.cos(Math.random() * Math.PI * 2.0) * 7000, y:Math.sin(Math.random() * Math.PI * 2.0) * 7000};
+                this.pos = {x:Math.cos(deg) * 7000, y:Math.sin(deg) * 7000};
                 this.rot = Math.random() * Math.PI * 2.0;
                 this.createShip(Math.floor(Math.random() * 3) + this.col * 3);
                 this.trg = Math.floor(Math.random() * a.length);
                 
                 // Give ship full speed towards center
                 this.spd = {
-                    x: -this.pos.x * 0.01,
-                    y: -this.pos.y * 0.01
+                    x: -this.pos.x * 0.015,
+                    y: -this.pos.y * 0.015
                 }
                 
                 // Create a respawn "blast"
