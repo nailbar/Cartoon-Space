@@ -249,7 +249,9 @@ function ship(pos, rot, typ, col) {
     this.gns = 0; // Ship has weapons
     this.sys = 0; // This has system
     this.pts = 0; // Number of healthy parts
-    this.var = 0; // Variation in decision making
+    this.var1 = 0; // When to start attacking
+    this.var2 = 0; // When to start firing
+    this.var3 = 0; // When to start evading
     this.respawn = 0; // Respawn timer
     this.p = new Array(); // List of parts
     
@@ -262,6 +264,9 @@ function ship(pos, rot, typ, col) {
         this.gns = 1;
         this.sys = 1;
         this.pts = 1;
+        this.var1 = Math.random(); // When to start attacking
+        this.var2 = Math.random(); // When to start firing
+        this.var3 = Math.random(); // When to start evading
         this.p = new Array();
         switch(id) {
         case 0: // Team 1 light fighter
@@ -573,13 +578,8 @@ function ship(pos, rot, typ, col) {
             var dot2 = this.nrm.x * nrm.x + this.nrm.y * nrm.y;
             
             // Follow target or evade it
-            if(dis > 700 + this.var) {
-                this.stt = 0;
-                this.var = Math.random() * 400 - 200;
-            } else if(dis < 500 + this.var) {
-                this.stt = 1;
-                this.var = Math.random() * 400 - 200;
-            }
+            if(dis > 700 + this.var1 * 400) this.stt = 0;
+            else if(dis < 500 + this.var3 * 400) this.stt = 1;
             
             // Always evade if no weapons
             if(!this.gns) this.stt = 1;
@@ -605,7 +605,7 @@ function ship(pos, rot, typ, col) {
                 else this.brn = 0;
                 
                 // Shoot target if within range
-                if(dis < 900 + this.var && dot2 > 0.9) this.fir = 1;
+                if(dis < 900 + this.var2 * 500 && dot2 > 0.9) this.fir = 1;
                 else this.fir = 0;
                 
                 // Get shooting for human controlled ship
@@ -613,6 +613,7 @@ function ship(pos, rot, typ, col) {
             
             // Evade target if too close
             } else if(this.stt == 1) {
+                this.fir = 0; // No firing because the game would be too difficult
                 
                 // If target is to the right, turn right, and vice versa
                 if(dot2 > 0.0) {
@@ -628,10 +629,6 @@ function ship(pos, rot, typ, col) {
                 // Accelerate if target is behind the ship
                 if(dot < 0.5) this.brn = 1;
                 else this.brn = 0;
-                
-                // Shoot target if within range
-                if(dis < 900 + this.var && dot2 > 0.9) this.fir = 1;
-                else this.fir = 0;
             }
         
         // Find new target
