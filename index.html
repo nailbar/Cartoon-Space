@@ -550,14 +550,11 @@ function ship(pos, rot, typ, col) {
                 y: a[this.trg].pos.y - this.pos.y
             };
             
-            // Get human input
-            if(followed && hascontrol) pos = trg;
-            
             // Get distance and normal to target
             var dis = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
             
             // Look for closer target if too far
-            if(dis > 2000 && (!followed || !hascontrol)) {
+            if(dis > 2000) {
                 var tmptrg = Math.floor(Math.random() * a.length);
                 if(a[tmptrg].sys && a[tmptrg].gns && a[tmptrg].acc && a[tmptrg].wgt && a[tmptrg].col != this.col) {
                     var tmppos = {
@@ -583,6 +580,12 @@ function ship(pos, rot, typ, col) {
             c.lineTo(this.pos.x + nrm.x * 90 ,this.pos.y + nrm.y * 90);
             c.closePath();
             c.stroke();
+            
+            // Get human input
+            if(followed && hascontrol) pos = trg;
+            dis = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
+            if(dis) nrm = {x: pos.x / dis, y: pos.y / dis};
+            else nrm = {x: 1, y: 0};
             
             // Get extruded dot value to target
             var dot = this.nrm.x * -nrm.y + this.nrm.y * nrm.x;
@@ -631,7 +634,6 @@ function ship(pos, rot, typ, col) {
             
             // Evade target if too close
             } else if(this.stt == 1) {
-                this.fir = 0;
                 
                 // If target is to the right, turn right, and vice versa
                 if(dot2 > 0.0) {
@@ -647,6 +649,10 @@ function ship(pos, rot, typ, col) {
                 // Accelerate if target is behind the ship
                 if(dot < 0.5) this.brn = 1;
                 else this.brn = 0;
+                
+                // Shoot target if within range
+                if(dis < 900 + this.var && dot2 > 0.9) this.fir = 1;
+                else this.fir = 0;
             }
         
         // Find new target
@@ -723,6 +729,7 @@ function loop() {
     if(!a[camid].sys || !a[camid].gns || !a[camid].acc) {
         camid = Math.floor(Math.random() * a.length);
         waitcam = 50; // Wait 50 framse until view switch
+        hascontrol = 0;
     } else if(waitcam < 1) {
         cam = a[camid].pos;
         if(!waitforit) {
@@ -797,7 +804,7 @@ function movetarget(e) {
     }
 }
 function startshooting() {
-    isshooting = true;
+    if(hascontrol) isshooting = true;
     hascontrol = 500;
 }
 function stopshooting() {
