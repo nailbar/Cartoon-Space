@@ -99,9 +99,11 @@ var part = {
     }
 };
 
-function frag(pos, rot, col, typ, sub) {
+function frag(pos, rot, col, typ, sub, del, spd) {
     this.pos = {x: 0, y: 0};
+    this.spd = {x: 0, y: 0};
     this.rot = 0;
+    this.del = 0;
     this.lif = 0;
     this.col = 0;
     this.typ = 0;
@@ -118,7 +120,6 @@ function frag(pos, rot, col, typ, sub) {
             case 1: part.draw(10, 3.0 / 20.0 * this.lif + 0.1); break; // Explosion
             case 2: part.draw(11, 2.0 / 10.0 * this.lif + 0.1); break; // Engine fire
             case 3: // Part
-                c.rotate(this.pos.x * 0.01);
                 switch(this.sub) {
                 case "shield1": part.draw(13); break;
                 default: part.draw(part.id(this.sub)); break;
@@ -136,24 +137,9 @@ function frag(pos, rot, col, typ, sub) {
             if(this.lif) {
                 
                 // Movement
-                switch(this.typ) {
-                case 0: // Blast
-                    this.pos.x += Math.cos(this.rot) * 30;
-                    this.pos.y += Math.sin(this.rot) * 30;
-                    break;
-                case 1: // Explosion
-                    this.pos.x += Math.cos(this.rot) * 5;
-                    this.pos.y += Math.sin(this.rot) * 5;
-                    break;
-                case 2: // Engine fire
-                    this.pos.x += Math.cos(this.rot) * 10;
-                    this.pos.y += Math.sin(this.rot) * 10;
-                    break;
-                case 3: // Part
-                    this.pos.x += Math.cos(this.rot) * 7;
-                    this.pos.y += Math.sin(this.rot) * 7;
-                    break;
-                }
+                this.pos.x += this.spd.x;
+                this.pos.y += this.spd.y;
+                this.rot += this.del;
                 
                 // Hit
                 var ppos;
@@ -203,9 +189,11 @@ function frag(pos, rot, col, typ, sub) {
                             if(a[i].p[prt].hlt <= 0.0) {
                                 b.push(new frag(
                                     {x: pcpos.x, y: pcpos.y},
-                                    Math.random() * 6.3,
+                                    a[i].rot,
                                     this.col,
-                                    3, a[i].p[prt].part
+                                    3, a[i].p[prt].part,
+                                    a[i].del + Math.random() * 0.2 - 0.1,
+                                    {x: a[i].spd.x + Math.random() * 8.0 - 4.0, y: a[i].spd.y + Math.random() * 8.0 - 4.0}
                                 ));
                                 a[i].p[prt].hlt = 0;
                             }
@@ -222,11 +210,27 @@ function frag(pos, rot, col, typ, sub) {
         if(col) this.col = col;
         if(typ) this.typ = typ;
         if(sub) this.sub = sub;
+        if(del) this.del = del;
         switch(this.typ) {
         case 0: this.lif = 100; break; // Live for 100 frames
         case 1: this.lif = 20; break; // Live for 10 frames
         case 2: this.lif = 10; break; // Live for 10 frames
         case 3: this.lif = 200; break; // Live for 200 frames
+        }
+        if(spd) this.spd = spd;
+        else switch(this.typ) {
+        case 0: // Blast
+            this.spd.x = Math.cos(this.rot) * 30;
+            this.spd.y = Math.sin(this.rot) * 30;
+            break;
+        case 1: // Explosion
+            this.spd.x = Math.cos(this.rot) * 5;
+            this.spd.y = Math.sin(this.rot) * 5;
+            break;
+        case 2: // Engine fire
+            this.spd.x = Math.cos(this.rot) * 10;
+            this.spd.y = Math.sin(this.rot) * 10;
+            break;
         }
     }
 }
@@ -430,7 +434,9 @@ function ship(pos, rot, typ, col) {
                 },
                 Math.random() * 6.3,
                 this.col,
-                3, this.p[i].part
+                3, this.p[i].part,
+                a[i].del + Math.random() * 0.2 - 0.1,
+                {x: this.spd.x + Math.random() * 8.0 - 4.0, y: this.spd.y + Math.random() * 8.0 - 4.0}
             ));
         }
         
@@ -505,7 +511,9 @@ function ship(pos, rot, typ, col) {
                                 y: this.pos.y + this.nrm.y * this.p[i].x + this.nrm.x * this.p[i].y
                             },
                             this.rot,
-                            this.col
+                            this.col, 0, false, false,
+                            {x: this.spd.x + this.nrm.x * 30.0, y: this.spd.y + this.nrm.y * 30.0}
+                            //pos, rot, col, typ, sub, del, spd
                         ));
                     }
                 }
