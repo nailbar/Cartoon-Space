@@ -39,7 +39,21 @@ var part = {
         case "hull4": return 14;
         case "hull5": return 15;
         case "system2": return 16;
-        default: return "part.id('" + part_name + "'): part not found!";
+        case "hull1broken": return 17;
+        case "hull2broken": return 18;
+        case "hull3broken": return 19;
+        case "engine1broken": return 20;
+        case "engine2broken": return 21;
+        case "system1broken": return 22;
+        case "blaster1leftbroken": return 23;
+        case "blaster1rightbroken": return 24;
+        case "blaster1broken": return 25;
+        case "hull4broken": return 26;
+        case "hull5broken": return 27;
+        case "system2broken": return 28;
+        default: 
+            document.getElementById('debug').innerHTML = "part.id('" + part_name + "'): part not found!";
+            return -1;
         }
     },
     'name': function(part_id) {
@@ -61,11 +75,25 @@ var part = {
         case 14: return "hull4";
         case 15: return "hull5";
         case 16: return "system2";
-        default: return "part.name(" + part_id + "): part not found!";
+        case 17: return "hull1broken";
+        case 18: return "hull2broken";
+        case 19: return "hull3broken";
+        case 20: return "engine1broken";
+        case 21: return "engine2broken";
+        case 22: return "system1broken";
+        case 23: return "blaster1leftbroken";
+        case 24: return "blaster1rightbroken";
+        case 25: return "blaster1broken";
+        case 26: return "hull4broken";
+        case 27: return "hull5broken";
+        case 28: return "system2broken";
+        default: 
+            document.getElementById('debug').innerHTML = "part.name(" + part_id + "): part not found!";
+            return -1;
         }
     },
     'init': function() {
-        for(var i = 0; i < 17; i++) {
+        for(var i = 0; i < 29; i++) {
           toload++;
           totalload++;
           p[i] = new Image();
@@ -119,12 +147,7 @@ function frag(pos, rot, col, typ, sub, del, spd) {
             case 0: part.draw(9); break;// Blast
             case 1: part.draw(10, 3.0 / 20.0 * this.lif + 0.1); break; // Explosion
             case 2: part.draw(11, 2.0 / 10.0 * this.lif + 0.1); break; // Engine fire
-            case 3: // Part
-                switch(this.sub) {
-                case "shield1": part.draw(13); break;
-                default: part.draw(part.id(this.sub)); break;
-                }
-                break;
+            case 3: part.draw(part.id(this.sub + "broken")); break; // Part
             }
             c.restore();
         }
@@ -149,6 +172,7 @@ function frag(pos, rot, col, typ, sub, del, spd) {
                 var pos;
                 var dis;
                 var prt;
+                var partid;
                 if(this.typ == 0 && !waitforit) for(var i = 0; i < a.length; i++) if(a[i].col != this.col && a[i].pts && this.lif > 0) {
                     
                     // Check if bullet is even near this ship
@@ -162,7 +186,9 @@ function frag(pos, rot, col, typ, sub, del, spd) {
                                 x: a[i].pos.x + a[i].nrm.x * a[i].p[u].x - a[i].nrm.y * a[i].p[u].y,
                                 y: a[i].pos.y + a[i].nrm.y * a[i].p[u].x + a[i].nrm.x * a[i].p[u].y
                             };
-                            psiz = (p[part.id(a[i].p[u].part)].width + p[part.id(a[i].p[u].part)].height) / 4.0;
+                            if(a[i].p[u].hlt < 0.2) partid = part.id(a[i].p[u].part + "broken");
+                            else partid = part.id(a[i].p[u].part);
+                            psiz = (p[partid].width + p[partid].height) / 4.0;
                             pos = {x: this.pos.x - ppos.x, y: this.pos.y - ppos.y};
                             dis = Math.sqrt(pos.x * pos.x + pos.y * pos.y) - psiz;
                             if(dis < psiz && dis < pdis) {
@@ -361,7 +387,8 @@ function ship(pos, rot, typ, col) {
                 pos.y + Math.sin(rot) * this.p[i].x + Math.cos(rot) * this.p[i].y
             );
             c.rotate(rot);
-            part.draw(part.id(this.p[i].part));
+            if(this.p[i].hlt < 0.2) part.draw(part.id(this.p[i].part + "broken"));
+            else part.draw(part.id(this.p[i].part));
             switch(this.p[i].part) {
             case "hull1": this.wgt += 0.8; break;
             case "hull2": this.wgt += 0.7; break;
@@ -370,8 +397,8 @@ function ship(pos, rot, typ, col) {
             case "hull5": this.wgt += 0.6; break;
             case "engine1":
                 this.wgt += 0.2;
-                this.acc += 1.0;
-                if(this.brn && Math.random() < 0.3) {
+                if(this.p[i].hlt > 0.2) this.acc += 1.0;
+                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3) {
                     b.push(new frag(
                         {
                             x: this.pos.x + this.nrm.x * (this.p[i].x - 15.0) - this.nrm.y * this.p[i].y,
@@ -385,8 +412,8 @@ function ship(pos, rot, typ, col) {
                 break;
             case "engine2":
                 this.wgt += 0.3;
-                this.acc += 1.2;
-                if(this.brn && Math.random() < 0.3) {
+                if(this.p[i].hlt > 0.2) this.acc += 1.2;
+                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3) {
                     b.push(new frag(
                         {
                             x: this.pos.x + this.nrm.x * (this.p[i].x - 25.0) - this.nrm.y * this.p[i].y,
@@ -400,23 +427,23 @@ function ship(pos, rot, typ, col) {
                 break;
             case "system1":
                 this.wgt += 0.2;
-                this.sys++;
+                if(this.p[i].hlt > 0.2) this.sys++;
                 break;
             case "system2":
                 this.wgt += 0.2;
-                this.sys++;
+                if(this.p[i].hlt > 0.2) this.sys++;
                 break;
             case "blaster1":
                 this.wgt += 0.2;
-                this.gns++;
+                if(this.p[i].hlt > 0.2) this.gns++;
                 break;
             case "blaster1left":
                 this.wgt += 0.2;
-                this.gns++;
+                if(this.p[i].hlt > 0.2) this.gns++;
                 break;
             case "blaster1right":
                 this.wgt += 0.2;
-                this.gns++;
+                if(this.p[i].hlt > 0.2) this.gns++;
                 break;
             case "shield1":
                 this.wgt += 2.5;
@@ -504,7 +531,7 @@ function ship(pos, rot, typ, col) {
                     this.lod = 15; // Load time 15 frames
                     
                     // Create bullets
-                    for(i = 0; i < this.p.length; i++) if(this.p[i].hlt > 0 && (this.p[i].part == "blaster1" || this.p[i].part == "blaster1left" || this.p[i].part == "blaster1right")) {
+                    for(i = 0; i < this.p.length; i++) if(this.p[i].hlt >= 0.2 && (this.p[i].part == "blaster1" || this.p[i].part == "blaster1left" || this.p[i].part == "blaster1right")) {
                         b.push(new frag(
                             {
                                 x: this.pos.x + this.nrm.x * this.p[i].x - this.nrm.y * this.p[i].y,
@@ -798,6 +825,6 @@ function stopshooting() {
 </head>
 <body onload='init()' onmouseup='stopshooting(event)' style='margin: 0px;'>
 <canvas id="canvas" width='1200' height='800' onmousedown='startshooting()' onmousemove='movetarget(event)'></canvas>
-<p id="asdf"></p>
+<p id="asdf"></p><p id="debug"></p>
 </body>
 </html>
