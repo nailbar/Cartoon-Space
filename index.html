@@ -14,6 +14,91 @@ var players = 1;
 var camid = 0;
 var waitcam = 0;
 
+// User input
+var hascontrol = 0;
+var isshooting = false;
+var trg = {x: 0, y: 0};
+
+var part = {
+    'id': function(part_name) {
+        switch(part_name) {
+        case "hull1": return 0;
+        case "hull2": return 1;
+        case "hull3": return 2;
+        case "engine1": return 3;
+        case "engine2": return 4;
+        case "system1": return 5;
+        case "blaster1left": return 6;
+        case "blaster1right": return 7;
+        case "blaster1": return 8;
+        case "blast1": return 9;
+        case "explosion1": return 10;
+        case "explosion2": return 11;
+        case "shield1": return 12;
+        case "shield1broken": return 13;
+        case "hull4": return 14;
+        case "hull5": return 15;
+        case "system2": return 16;
+        default: return "part.id('" + part_name + "'): part not found!";
+        }
+    },
+    'name': function(part_id) {
+        switch(part_id) {
+        case 0: return "hull1";
+        case 1: return "hull2";
+        case 2: return "hull3";
+        case 3: return "engine1";
+        case 4: return "engine2";
+        case 5: return "system1";
+        case 6: return "blaster1left";
+        case 7: return "blaster1right";
+        case 8: return "blaster1";
+        case 9: return "blast1";
+        case 10: return "explosion1";
+        case 11: return "explosion2";
+        case 12: return "shield1";
+        case 13: return "shield1broken";
+        case 14: return "hull4";
+        case 15: return "hull5";
+        case 16: return "system2";
+        default: return "part.name(" + part_id + "): part not found!";
+        }
+    },
+    'init': function() {
+        for(var i = 0; i < 17; i++) {
+          toload++;
+          totalload++;
+          p[i] = new Image();
+          p[i].onload = doneload();
+          p[i].src = part.name(i) + ".png";
+        }
+    },
+    'draw': function(part_id, scale) {
+        if(scale) c.scale(scale, scale);
+        c.translate(-p[part_id].width * 0.5, -p[part_id].height * 0.5);
+        c.drawImage(p[part_id], 0, 0);
+    },
+    'create': function(part_name, posx, posy, parent_id) {
+        switch(part_name) {
+        case "hull1": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id};
+        case "hull2": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id};
+        case "hull3": return {part: part_name, x: posx, y: posy, hlt: 1.3, parent: parent_id};
+        case "engine1": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        case "engine2": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        case "system1": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        case "blaster1left": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id};
+        case "blaster1right": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id};
+        case "blaster1": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id};
+        case "shield1": return {part: part_name, x: posx, y: posy, hlt: 3.0, parent: parent_id};
+        case "hull4": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id};
+        case "hull5": return {part: part_name, x: posx, y: posy, hlt: 1.3, parent: parent_id};
+        case "system2": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        default: return "part.create('" + part_name + "'): part not found!";
+        }
+        
+    }
+};
+
 function frag(pos, rot, col, typ, sub) {
     this.pos = {x: 0, y: 0};
     this.rot = 0;
@@ -29,87 +114,14 @@ function frag(pos, rot, col, typ, sub) {
             c.translate(this.pos.x, this.pos.y);
             c.rotate(this.rot);
             switch(this.typ) {
-            case 0: // Blast
-                c.translate(-p[9].width * 0.5, -p[9].height * 0.5);
-                c.drawImage(p[9], 0, 0);
-                break;
-            case 1: // Explosion
-                c.scale(3.0 / 20.0 * this.lif + 0.1, 3.0 / 20.0 * this.lif + 0.1);
-                c.translate(-p[10].width * 0.5, -p[10].height * 0.5);
-                c.drawImage(p[10], 0, 0);
-                break;
-            case 2: // Engine fire
-                c.scale(2.0 / 10.0 * this.lif + 0.1, 2.0 / 10.0 * this.lif + 0.1);
-                c.translate(-p[11].width * 0.5, -p[11].height * 0.5);
-                c.drawImage(p[11], 0, 0);
-                break;
+            case 0: part.draw(9); break;// Blast
+            case 1: part.draw(10, 3.0 / 20.0 * this.lif + 0.1); break; // Explosion
+            case 2: part.draw(11, 2.0 / 10.0 * this.lif + 0.1); break; // Engine fire
             case 3: // Part
+                c.rotate(this.pos.x * 0.01);
                 switch(this.sub) {
-                case "hull1":
-                    c.rotate(this.pos.x * 0.01);
-                    c.translate(-p[0].width * 0.5, -p[0].height * 0.5);
-                    c.drawImage(p[0], 0, 0);
-                    break;
-                case "hull2":
-                    c.rotate(this.pos.x * 0.01);
-                    c.translate(-p[1].width * 0.5, -p[1].height * 0.5);
-                    c.drawImage(p[1], 0, 0);
-                    break;
-                case "hull3":
-                    c.rotate(this.pos.x * 0.01);
-                    c.translate(-p[2].width * 0.5, -p[2].height * 0.5);
-                    c.drawImage(p[2], 0, 0);
-                    break;
-                case "hull4":
-                    c.rotate(this.pos.x * 0.01);
-                    c.translate(-p[14].width * 0.5, -p[14].height * 0.5);
-                    c.drawImage(p[14], 0, 0);
-                    break;
-                case "hull5":
-                    c.rotate(this.pos.x * 0.01);
-                    c.translate(-p[15].width * 0.5, -p[15].height * 0.5);
-                    c.drawImage(p[15], 0, 0);
-                    break;
-                case "engine1":
-                    c.rotate(this.pos.x * 0.01);
-                    c.translate(-p[3].width * 0.5, -p[3].height * 0.5);
-                    c.drawImage(p[3], 0, 0);
-                    break;
-                case "engine2":
-                    c.rotate(this.pos.x * 0.01);
-                    c.translate(-p[4].width * 0.5, -p[4].height * 0.5);
-                    c.drawImage(p[4], 0, 0);
-                    break;
-                case "system1":
-                    c.rotate(this.pos.x * 0.01);
-                    c.translate(-p[5].width * 0.5, -p[5].height * 0.5);
-                    c.drawImage(p[5], 0, 0);
-                    break;
-                case "system2":
-                    c.rotate(this.pos.x * 0.01);
-                    c.translate(-p[16].width * 0.5, -p[16].height * 0.5);
-                    c.drawImage(p[16], 0, 0);
-                    break;
-                case "blaster1":
-                    c.rotate(this.pos.x * 0.01);
-                    c.translate(-p[8].width * 0.5, -p[8].height * 0.5);
-                    c.drawImage(p[8], 0, 0);
-                    break;
-                case "blaster1left":
-                    c.rotate(this.pos.x * 0.01);
-                    c.translate(-p[6].width * 0.5, -p[6].height * 0.5);
-                    c.drawImage(p[6], 0, 0);
-                    break;
-                case "blaster1right":
-                    c.rotate(this.pos.x * 0.01);
-                    c.translate(-p[7].width * 0.5, -p[7].height * 0.5);
-                    c.drawImage(p[7], 0, 0);
-                    break;
-                case "shield1":
-                    c.rotate(this.pos.x * 0.01);
-                    c.translate(-p[13].width * 0.5, -p[13].height * 0.5);
-                    c.drawImage(p[13], 0, 0);
-                    break;
+                case "shield1": part.draw(13); break;
+                default: part.draw(part.id(this.sub)); break;
                 }
                 break;
             }
@@ -164,21 +176,7 @@ function frag(pos, rot, col, typ, sub) {
                                 x: a[i].pos.x + a[i].nrm.x * a[i].p[u].x - a[i].nrm.y * a[i].p[u].y,
                                 y: a[i].pos.y + a[i].nrm.y * a[i].p[u].x + a[i].nrm.x * a[i].p[u].y
                             };
-                            switch(a[i].p[u].part) {
-                            case "hull1": psiz = (p[0].width + p[0].height) / 4.0; break;
-                            case "hull2": psiz = (p[1].width + p[1].height) / 4.0; break;
-                            case "hull3": psiz = (p[2].width + p[2].height) / 4.0; break;
-                            case "hull4": psiz = (p[14].width + p[14].height) / 4.0; break;
-                            case "hull5": psiz = (p[15].width + p[15].height) / 4.0; break;
-                            case "engine1": psiz = (p[3].width + p[3].height) / 4.0; break;
-                            case "engine2": psiz = (p[4].width + p[4].height) / 4.0; break;
-                            case "system1": psiz = (p[5].width + p[5].height) / 4.0; break;
-                            case "system2": psiz = (p[16].width + p[16].height) / 4.0; break;
-                            case "blaster1": psiz = (p[8].width + p[8].height) / 4.0; break;
-                            case "blaster1left": psiz = (p[6].width + p[6].height) / 4.0; break;
-                            case "blaster1right": psiz = (p[7].width + p[7].height) / 4.0; break;
-                            case "shield1": psiz = (p[12].width + p[12].height) / 4.0; break;
-                            }
+                            psiz = (p[part.id(a[i].p[u].part)].width + p[part.id(a[i].p[u].part)].height) / 4.0;
                             pos = {x: this.pos.x - ppos.x, y: this.pos.y - ppos.y};
                             dis = Math.sqrt(pos.x * pos.x + pos.y * pos.y) - psiz;
                             if(dis < psiz && dis < pdis) {
@@ -267,72 +265,72 @@ function ship(pos, rot, typ, col) {
         this.p = new Array();
         switch(id) {
         case 0: // Team 1 light fighter
-            this.p.push({part: "blaster1", x: 25.0, y: 0.0, hlt: 0.7, parent: 2});
-            this.p.push({part: "engine1", x: -35.0, y: 0.0, hlt: 1.0, parent: 2});
-            this.p.push({part: "hull1", x: 0.0, y: 0.0, hlt: 2.0, parent: 2});
-            this.p.push({part: "system1", x: -15.0, y: 0.0, hlt: 1.0, parent: 2});
+            this.p.push(part.create("blaster1", 25.0, 0.0, 2));
+            this.p.push(part.create("engine1", -35.0, 0.0, 2));
+            this.p.push(part.create("hull1", 0.0, 0.0, 2));
+            this.p.push(part.create("system1", -15.0, 0.0, 2));
             break;
         case 1: // Team 1 medium fighter
-            this.p.push({part: "engine1", x: -35.0, y: 0.0, hlt: 1.0, parent: 1});
-            this.p.push({part: "hull1", x: 0.0, y: 0.0, hlt: 2.0, parent: 1});
-            this.p.push({part: "system1", x: -15.0, y: 0.0, hlt: 1.0, parent: 1});
-            this.p.push({part: "blaster1left", x: -15.0, y: -22.0, hlt: 0.7, parent: 1});
-            this.p.push({part: "blaster1right", x: -15.0, y: 22.0, hlt: 0.7, parent: 1});
+            this.p.push(part.create("engine1", -35.0, 0.0, 1));
+            this.p.push(part.create("hull1", 0.0, 0.0, 1));
+            this.p.push(part.create("system1", -15.0, 0.0, 1));
+            this.p.push(part.create("blaster1left", -15.0, -22.0, 1));
+            this.p.push(part.create("blaster1right", -15.0, 22.0, 1));
             break;
         case 2: // Team 1 heavy fighter
-            this.p.push({part: "blaster1left", x: -20.0, y: -22.0, hlt: 0.7, parent: 6});
-            this.p.push({part: "blaster1right", x: -20.0, y: 22.0, hlt: 0.7, parent: 6});
-            this.p.push({part: "blaster1left", x: 15.0, y: -12.0, hlt: 0.7, parent: 6});
-            this.p.push({part: "blaster1right", x: 15.0, y: 12.0, hlt: 0.7, parent: 6});
-            this.p.push({part: "engine1", x: -43.0, y: 14.0, hlt: 1.0, parent: 7});
-            this.p.push({part: "engine1", x: -43.0, y: -14.0, hlt: 1.0, parent: 7});
-            this.p.push({part: "hull1", x: 0.0, y: 0.0, hlt: 2.0, parent: 6});
-            this.p.push({part: "hull3", x: -35.0, y: 0.0, hlt: 1.3, parent: 6});
-            this.p.push({part: "system1", x: -15.0, y: 0.0, hlt: 1.0, parent: 6});
+            this.p.push(part.create("blaster1left", -20.0, -22.0, 6));
+            this.p.push(part.create("blaster1right", -20.0, 22.0, 6));
+            this.p.push(part.create("blaster1left", 15.0, -12.0, 6));
+            this.p.push(part.create("blaster1right", 15.0, 12.0, 6));
+            this.p.push(part.create("engine1", -43.0, 14.0, 7));
+            this.p.push(part.create("engine1", -43.0, -14.0, 7));
+            this.p.push(part.create("hull1", 0.0, 0.0, 6));
+            this.p.push(part.create("hull3", -35.0, 0.0, 6));
+            this.p.push(part.create("system1", -15.0, 0.0, 6));
             break;
         case 3: // Team 2 light fighter
-            this.p.push({part: "blaster1", x: 30.0, y: 0.0, hlt: 0.7, parent: 2});
-            this.p.push({part: "engine2", x: -25.0, y: 0.0, hlt: 1.0, parent: 2});
-            this.p.push({part: "hull2", x: 0.0, y: 0.0, hlt: 2.0, parent: 2});
-            this.p.push({part: "system1", x: 0.0, y: 0.0, hlt: 1.0, parent: 2});
+            this.p.push(part.create("blaster1", 30.0, 0.0, 2));
+            this.p.push(part.create("engine2", -25.0, 0.0, 2));
+            this.p.push(part.create("hull2", 0.0, 0.0, 2));
+            this.p.push(part.create("system1", 0.0, 0.0, 2));
             break;
         case 4: // Team 2 medium fighter
-            this.p.push({part: "blaster1left", x: -10.0, y: -20.0, hlt: 0.7, parent: 3});
-            this.p.push({part: "blaster1right", x: -10.0, y: 20.0, hlt: 0.7, parent: 3});
-            this.p.push({part: "engine2", x: -25.0, y: 0.0, hlt: 1.0, parent: 3});
-            this.p.push({part: "hull2", x: 0.0, y: 0.0, hlt: 2.0, parent: 3});
-            this.p.push({part: "system1", x: 0.0, y: 0.0, hlt: 1.0, parent: 3});
+            this.p.push(part.create("blaster1left", -10.0, -20.0, 3));
+            this.p.push(part.create("blaster1right", -10.0, 20.0, 3));
+            this.p.push(part.create("engine2", -25.0, 0.0, 3));
+            this.p.push(part.create("hull2", 0.0, 0.0, 3));
+            this.p.push(part.create("system1", 0.0, 0.0, 3));
             break;
         case 5: // Team 2 heavy fighter
-            this.p.push({part: "blaster1", x: 30.0, y: 0.0, hlt: 0.7, parent: 4});
-            this.p.push({part: "blaster1left", x: -10.0, y: -20.0, hlt: 0.7, parent: 4});
-            this.p.push({part: "blaster1right", x: -10.0, y: 20.0, hlt: 0.7, parent: 4});
-            this.p.push({part: "engine2", x: -25.0, y: 0.0, hlt: 1.0, parent: 4});
-            this.p.push({part: "hull2", x: 0.0, y: 0.0, hlt: 2.0, parent: 4});
-            this.p.push({part: "system1", x: 0.0, y: 0.0, hlt: 1.0, parent: 4});
+            this.p.push(part.create("blaster1", 30.0, 0.0, 4));
+            this.p.push(part.create("blaster1left", -10.0, -20.0, 4));
+            this.p.push(part.create("blaster1right", -10.0, 20.0, 4));
+            this.p.push(part.create("engine2", -25.0, 0.0, 4));
+            this.p.push(part.create("hull2", 0.0, 0.0, 4));
+            this.p.push(part.create("system1", 0.0, 0.0, 4));
             break;
         case 6: // Team 3 light fighter
-            this.p.push({part: "blaster1left", x: 15.0, y: -10.0, hlt: 0.7, parent: 3});
-            this.p.push({part: "blaster1right", x: 15.0, y: 10.0, hlt: 0.7, parent: 3});
-            this.p.push({part: "engine2", x: -5.0, y: 0.0, hlt: 1.0, parent: 3});
-            this.p.push({part: "hull5", x: 0.0, y: 0.0, hlt: 1.3, parent: 3});
-            this.p.push({part: "system2", x: 20.0, y: 0.0, hlt: 1.0, parent: 3});
+            this.p.push(part.create("blaster1left", 15.0, -10.0, 3));
+            this.p.push(part.create("blaster1right", 15.0, 10.0, 3));
+            this.p.push(part.create("engine2", -5.0, 0.0, 3));
+            this.p.push(part.create("hull5", 0.0, 0.0, 3));
+            this.p.push(part.create("system2", 20.0, 0.0, 3));
             break;
         case 7: // Team 3 medium fighter
-            this.p.push({part: "engine2", x: -25.0, y: 0.0, hlt: 1.0, parent: 2});
-            this.p.push({part: "blaster1", x: 40.0, y: 0.0, hlt: 0.7, parent: 2});
-            this.p.push({part: "hull4", x: 0.0, y: 0.0, hlt: 2.0, parent: 2});
-            this.p.push({part: "system2", x: 20.0, y: 0.0, hlt: 1.0, parent: 2});
-            this.p.push({part: "shield1", x: 0.0, y: 0.0, hlt: 3.0, parent: 2});
+            this.p.push(part.create("engine2", -25.0, 0.0, 2));
+            this.p.push(part.create("blaster1", 40.0, 0.0, 2));
+            this.p.push(part.create("hull4", 0.0, 0.0, 2));
+            this.p.push(part.create("system2", 20.0, 0.0, 2));
+            this.p.push(part.create("shield1", 0.0, 0.0, 2));
             break;
         case 8: // Team 3 heavy fighter
-            this.p.push({part: "engine2", x: -35.0, y: 0.0, hlt: 1.0, parent: 4});
-            this.p.push({part: "blaster1left", x: 5.0, y: -25.0, hlt: 0.7, parent: 4});
-            this.p.push({part: "blaster1right", x: 5.0, y: 25.0, hlt: 0.7, parent: 4});
-            this.p.push({part: "hull5", x: 30.0, y: 0.0, hlt: 1.3, parent: 3});
-            this.p.push({part: "hull4", x: -10.0, y: 0.0, hlt: 2.0, parent: 3});
-            this.p.push({part: "shield1", x: 0.0, y: 0.0, hlt: 3.0, parent: 4});
-            this.p.push({part: "system2", x: 30.0, y: 0.0, hlt: 1.0, parent: 3});
+            this.p.push(part.create("engine2", -35.0, 0.0, 4));
+            this.p.push(part.create("blaster1left", 5.0, -25.0, 4));
+            this.p.push(part.create("blaster1right", 5.0, 25.0, 4));
+            this.p.push(part.create("hull5", 30.0, 0.0, 3));
+            this.p.push(part.create("hull4", -10.0, 0.0, 3));
+            this.p.push(part.create("shield1", 0.0, 0.0, 4));
+            this.p.push(part.create("system2", 30.0, 0.0, 3));
             break;
         }
     }
@@ -532,7 +530,7 @@ function ship(pos, rot, typ, col) {
     }
     
     // Perform AI tasks
-    this.thinkShip = function() {
+    this.thinkShip = function(followed) {
         if(!this.sys || waitforit) {
             this.brn = 0;
             this.fir = 0;
@@ -552,11 +550,14 @@ function ship(pos, rot, typ, col) {
                 y: a[this.trg].pos.y - this.pos.y
             };
             
+            // Get human input
+            if(followed && hascontrol) pos = trg;
+            
             // Get distance and normal to target
             var dis = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
             
             // Look for closer target if too far
-            if(dis > 2000) {
+            if(dis > 2000 && (!followed || !hascontrol)) {
                 var tmptrg = Math.floor(Math.random() * a.length);
                 if(a[tmptrg].sys && a[tmptrg].gns && a[tmptrg].acc && a[tmptrg].wgt && a[tmptrg].col != this.col) {
                     var tmppos = {
@@ -601,6 +602,9 @@ function ship(pos, rot, typ, col) {
             // Always evade if no weapons
             if(!this.gns) this.stt = 1;
             
+            // Controlled ship always follows target
+            if(followed && hascontrol) this.stt = 0;
+            
             // Follow mode
             if(this.stt == 0) {
                 
@@ -621,6 +625,9 @@ function ship(pos, rot, typ, col) {
                 // Shoot target if within range
                 if(dis < 900 + this.var && dot2 > 0.9) this.fir = 1;
                 else this.fir = 0;
+                
+                // Get shooting for human controlled ship
+                if(followed && hascontrol) this.fir = isshooting;
             
             // Evade target if too close
             } else if(this.stt == 1) {
@@ -666,76 +673,7 @@ function init() {
     c = canvas.getContext('2d');
     
     // Load images
-    toload++; totalload++;
-    p[0] = new Image(); p[0].onload = doneload(); p[0].src = "hull1.png";
-    toload++; totalload++;
-    p[1] = new Image(); p[1].onload = doneload(); p[1].src = "hull2.png";
-    toload++;
-    totalload++;
-    p[2] = new Image();
-    p[2].onload = doneload();
-    p[2].src = "hull3.png";
-    toload++;
-    totalload++;
-    p[3] = new Image();
-    p[3].onload = doneload();
-    p[3].src = "engine1.png";
-    toload++;
-    totalload++;
-    p[4] = new Image();
-    p[4].onload = doneload();
-    p[4].src = "engine2.png";
-    toload++;
-    totalload++;
-    p[5] = new Image();
-    p[5].onload = doneload();
-    p[5].src = "system1.png";
-    toload++;
-    totalload++;
-    p[6] = new Image();
-    p[6].onload = doneload();
-    p[6].src = "blaster1left.png";
-    toload++;
-    totalload++;
-    p[7] = new Image();
-    p[7].onload = doneload();
-    p[7].src = "blaster1right.png";
-    toload++;
-    totalload++;
-    p[8] = new Image();
-    p[8].onload = doneload();
-    p[8].src = "blaster1.png";
-    toload++;
-    totalload++;
-    p[9] = new Image();
-    p[9].onload = doneload();
-    p[9].src = "blast1.png";
-    toload++;
-    totalload++;
-    p[10] = new Image();
-    p[10].onload = doneload();
-    p[10].src = "explosion1.png";
-    toload++;
-    totalload++;
-    p[11] = new Image();
-    p[11].onload = doneload();
-    p[11].src = "explosion2.png";
-    toload++;
-    totalload++;
-    p[12] = new Image();
-    p[12].onload = doneload();
-    p[12].src = "shield1.png";
-    toload++;
-    totalload++;
-    p[13] = new Image();
-    p[13].onload = doneload();
-    p[13].src = "shield1broken.png";
-    toload++; totalload++;
-    p[14] = new Image(); p[14].onload = doneload(); p[14].src = "hull4.png";
-    toload++; totalload++;
-    p[15] = new Image(); p[15].onload = doneload(); p[15].src = "hull5.png";
-    toload++; totalload++;
-    p[16] = new Image(); p[16].onload = doneload(); p[16].src = "system2.png";
+    part.init();
     doneload();
 }
 
@@ -803,7 +741,7 @@ function loop() {
         c.save();
         a[i].moveShip();
         a[i].drawShip();
-        a[i].thinkShip();
+        a[i].thinkShip(i == camid);
         c.restore();
         if(a[i].sys && a[i].gns && a[i].acc) teams[a[i].col]++;
         
@@ -838,16 +776,37 @@ function loop() {
     if(tosplice.length) for(var i = tosplice.length - 1; i >= 0; i--) b.splice(tosplice[i], 1);
     c.restore();
     
+    // Timer for human control
+    if(hascontrol > 0) hascontrol--;
+    else hascontrol = 0;
+    
     // Restart game
     var multi = 0;
     for(var i = 0; i < teams.length; i++) if(teams[i]) multi++;
     if(multi < 2 && waitforit <= 0)  waitforit = 200;
     else document.getElementById('asdf').innerHTML = "Ships per team: " + teams + "<br/>Teams left: " + multi;
 }
+
+function movetarget(e) {
+    if(hascontrol) {
+        hascontrol = 500;
+        trg = {
+            x: (e.clientX - canvas.width * 0.5) * zoom,
+            y: (e.clientY - canvas.height * 0.5) * zoom
+        }
+    }
+}
+function startshooting() {
+    isshooting = true;
+    hascontrol = 500;
+}
+function stopshooting() {
+    isshooting = false;
+}
 </script>
 </head>
-<body onload='init()'>
-<canvas id="canvas" width='1200' height='800'></canvas>
+<body onload='init()' onmouseup='stopshooting(event)' style='margin: 0px;'>
+<canvas id="canvas" width='1200' height='800' onmousedown='startshooting()' onmousemove='movetarget(event)'></canvas>
 <p id="asdf"></p>
 </body>
 </html>
