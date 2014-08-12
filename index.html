@@ -54,6 +54,53 @@ var part = {
         case "hull4broken": return 26;
         case "hull5broken": return 27;
         case "system2broken": return 28;
+        
+        // Scythe parts
+        case "vanduul/scythe_big_gun": return 29;
+        case "vanduul/scythe_blade": return 30;
+        case "vanduul/scythe_gun_arm": return 31;
+        case "vanduul/scythe_medium_gun": return 32;
+        case "vanduul/scythe_blade_arm": return 33;
+        case "vanduul/scythe_cockpit": return 34;
+        case "vanduul/scythe_main_hull": return 35;
+        case "vanduul/scythe_small_gun": return 36;
+        case "vanduul/scythe_thruster": return 37;
+        case "vanduul/scythe_big_gunbroken": return 38;
+        case "vanduul/scythe_bladebroken": return 39;
+        case "vanduul/scythe_gun_armbroken": return 40;
+        case "vanduul/scythe_medium_gunbroken": return 41;
+        case "vanduul/scythe_blade_armbroken": return 42;
+        case "vanduul/scythe_cockpitbroken": return 43;
+        case "vanduul/scythe_main_hullbroken": return 44;
+        case "vanduul/scythe_small_gunbroken": return 45;
+        case "vanduul/scythe_thrusterbroken": return 46;
+        
+        // More blasts
+        case "blast2": return 47;
+        case "blast3": return 48;
+        
+        // Hornet parts
+        case "anvil/hornet_ball_turret": return 49;
+        case "anvil/hornet_big_gun": return 50;
+        case "anvil/hornet_cockpit": return 51;
+        case "anvil/hornet_intake_left": return 52;
+        case "anvil/hornet_intake_right": return 53;
+        case "anvil/hornet_main_hull": return 54;
+        case "anvil/hornet_tail": return 55;
+        case "anvil/hornet_thruster": return 56;
+        case "anvil/hornet_wings_left": return 57;
+        case "anvil/hornet_wings_right": return 58;
+        case "anvil/hornet_ball_turretbroken": return 59;
+        case "anvil/hornet_big_gunbroken": return 60;
+        case "anvil/hornet_cockpitbroken": return 61;
+        case "anvil/hornet_intake_leftbroken": return 62;
+        case "anvil/hornet_intake_rightbroken": return 63;
+        case "anvil/hornet_main_hullbroken": return 64;
+        case "anvil/hornet_tailbroken": return 65;
+        case "anvil/hornet_thrusterbroken": return 66;
+        case "anvil/hornet_wings_leftbroken": return 67;
+        case "anvil/hornet_wings_rightbroken": return 68;
+        
         default: 
             document.getElementById('debug').innerHTML = "part.id('" + part_name + "'): part not found!";
             return -1;
@@ -90,13 +137,60 @@ var part = {
         case 26: return "hull4broken";
         case 27: return "hull5broken";
         case 28: return "system2broken";
+        
+        // Scythe parts
+        case 29: return "vanduul/scythe_big_gun";
+        case 30: return "vanduul/scythe_blade";
+        case 31: return "vanduul/scythe_gun_arm";
+        case 32: return "vanduul/scythe_medium_gun";
+        case 33: return "vanduul/scythe_blade_arm";
+        case 34: return "vanduul/scythe_cockpit";
+        case 35: return "vanduul/scythe_main_hull";
+        case 36: return "vanduul/scythe_small_gun";
+        case 37: return "vanduul/scythe_thruster";
+        case 38: return "vanduul/scythe_big_gunbroken";
+        case 39: return "vanduul/scythe_bladebroken";
+        case 40: return "vanduul/scythe_gun_armbroken";
+        case 41: return "vanduul/scythe_medium_gunbroken";
+        case 42: return "vanduul/scythe_blade_armbroken";
+        case 43: return "vanduul/scythe_cockpitbroken";
+        case 44: return "vanduul/scythe_main_hullbroken";
+        case 45: return "vanduul/scythe_small_gunbroken";
+        case 46: return "vanduul/scythe_thrusterbroken";
+        
+        // More blasts
+        case 47: return "blast2";
+        case 48: return "blast3";
+        
+        // Hornet parts
+        case 49: return "anvil/hornet_ball_turret";
+        case 50: return "anvil/hornet_big_gun";
+        case 51: return "anvil/hornet_cockpit";
+        case 52: return "anvil/hornet_intake_left";
+        case 53: return "anvil/hornet_intake_right";
+        case 54: return "anvil/hornet_main_hull";
+        case 55: return "anvil/hornet_tail";
+        case 56: return "anvil/hornet_thruster";
+        case 57: return "anvil/hornet_wings_left";
+        case 58: return "anvil/hornet_wings_right";
+        case 59: return "anvil/hornet_ball_turretbroken";
+        case 60: return "anvil/hornet_big_gunbroken";
+        case 61: return "anvil/hornet_cockpitbroken";
+        case 62: return "anvil/hornet_intake_leftbroken";
+        case 63: return "anvil/hornet_intake_rightbroken";
+        case 64: return "anvil/hornet_main_hullbroken";
+        case 65: return "anvil/hornet_tailbroken";
+        case 66: return "anvil/hornet_thrusterbroken";
+        case 67: return "anvil/hornet_wings_leftbroken";
+        case 68: return "anvil/hornet_wings_rightbroken";
+        
         default: 
             document.getElementById('debug').innerHTML = "part.name(" + part_id + "): part not found!";
             return -1;
         }
     },
     'init': function() {
-        for(var i = 0; i < 29; i++) {
+        for(var i = 0; i < 69; i++) {
           toload++;
           totalload++;
           p[i] = new Image();
@@ -124,6 +218,30 @@ var part = {
         case "hull4": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id};
         case "hull5": return {part: part_name, x: posx, y: posy, hlt: 1.3, parent: parent_id};
         case "system2": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        
+        // Scythe parts
+        case "vanduul/scythe_big_gun": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        case "vanduul/scythe_blade": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id};
+        case "vanduul/scythe_gun_arm": return {part: part_name, x: posx, y: posy, hlt: 1.5, parent: parent_id};
+        case "vanduul/scythe_medium_gun": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id};
+        case "vanduul/scythe_blade_arm": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        case "vanduul/scythe_cockpit": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        case "vanduul/scythe_main_hull": return {part: part_name, x: posx, y: posy, hlt: 3.0, parent: parent_id};
+        case "vanduul/scythe_small_gun": return {part: part_name, x: posx, y: posy, hlt: 0.5, parent: parent_id};
+        case "vanduul/scythe_thruster": return {part: part_name, x: posx, y: posy, hlt: 1.5, parent: parent_id};
+        
+        // Hornet parts
+        case "anvil/hornet_ball_turret": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        case "anvil/hornet_big_gun": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        case "anvil/hornet_cockpit": return {part: part_name, x: posx, y: posy, hlt: 1.5, parent: parent_id};
+        case "anvil/hornet_intake_left": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        case "anvil/hornet_intake_right": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        case "anvil/hornet_main_hull": return {part: part_name, x: posx, y: posy, hlt: 2.5, parent: parent_id};
+        case "anvil/hornet_tail": return {part: part_name, x: posx, y: posy, hlt: 1.5, parent: parent_id};
+        case "anvil/hornet_thruster": return {part: part_name, x: posx, y: posy, hlt: 1.2, parent: parent_id};
+        case "anvil/hornet_wings_left": return {part: part_name, x: posx, y: posy, hlt: 1.3, parent: parent_id};
+        case "anvil/hornet_wings_right": return {part: part_name, x: posx, y: posy, hlt: 1.3, parent: parent_id};
+        
         default: return "part.create('" + part_name + "'): part not found!";
         }
         
@@ -151,6 +269,8 @@ function frag(pos, rot, col, typ, sub, del, spd) {
             case 1: part.draw(10, 3.0 / 20.0 * this.lif + 0.1); break; // Explosion
             case 2: part.draw(11, 2.0 / 10.0 * this.lif + 0.1); break; // Engine fire
             case 3: part.draw(part.id(this.sub + "broken")); break; // Part
+            case 4: part.draw(47); break; // Big blast
+            case 5: part.draw(48); break; // Small blast
             }
             c.restore();
         }
@@ -176,7 +296,7 @@ function frag(pos, rot, col, typ, sub, del, spd) {
                 var dis;
                 var prt;
                 var partid;
-                if(this.typ == 0 && !waitforit) for(var i = 0; i < a.length; i++) if(a[i].col != this.col && a[i].pts && this.lif > 0) {
+                if((this.typ == 0 || this.typ == 4 || this.typ == 5) && !waitforit) for(var i = 0; i < a.length; i++) if(a[i].col != this.col && a[i].pts && this.lif > 0) {
                     
                     // Check if bullet is even near this ship
                     if(this.pos.x < a[i].pos.x + 50 && this.pos.x > a[i].pos.x - 50 && this.pos.y < a[i].pos.y + 50 && this.pos.y > a[i].pos.y - 50) {
@@ -204,9 +324,13 @@ function frag(pos, rot, col, typ, sub, del, spd) {
                         // If part is hit, add damage
                         if(prt != -1) {
                             this.lif = 0;
+                            switch(this.typ) {
+                            case 0: a[i].p[prt].hlt -= Math.random() + 0.3; break;
+                            case 4: a[i].p[prt].hlt -= Math.random() + 0.6; break;
+                            case 5: a[i].p[prt].hlt -= Math.random() + 0.1; break;
+                            }
                             
                             // Create explosion
-                            a[i].p[prt].hlt -= Math.random() + 0.3;
                             for(var u = 0; u < 3; u++) b.push(new frag(
                                 {x: this.pos.x, y: this.pos.y},
                                 Math.random() * 6.3,
@@ -245,6 +369,8 @@ function frag(pos, rot, col, typ, sub, del, spd) {
         case 1: this.lif = 20; break; // Live for 10 frames
         case 2: this.lif = 10; break; // Live for 10 frames
         case 3: this.lif = 200; break; // Live for 200 frames
+        case 4: this.lif = 100; break; // Live for 100 frames
+        case 5: this.lif = 100; break; // Live for 100 frames
         }
         if(spd) this.spd = spd;
         else switch(this.typ) {
@@ -259,6 +385,14 @@ function frag(pos, rot, col, typ, sub, del, spd) {
         case 2: // Engine fire
             this.spd.x = Math.cos(this.rot) * 10;
             this.spd.y = Math.sin(this.rot) * 10;
+            break;
+        case 4: // Big blast
+            this.spd.x = Math.cos(this.rot) * 30;
+            this.spd.y = Math.sin(this.rot) * 30;
+            break;
+        case 5: // Small blast
+            this.spd.x = Math.cos(this.rot) * 30;
+            this.spd.y = Math.sin(this.rot) * 30;
             break;
         }
     }
@@ -302,74 +436,102 @@ function ship(pos, rot, typ, col) {
         this.var3 = Math.random(); // When to start evading
         this.p = new Array();
         switch(id) {
-        case 0: // Team 1 light fighter
-            this.p.push(part.create("blaster1", 25.0, 0.0, 2));
-            this.p.push(part.create("engine1", -35.0, 0.0, 2));
-            this.p.push(part.create("hull1", 0.0, 0.0, 2));
-            this.p.push(part.create("system1", -15.0, 0.0, 2));
+        case 0: // Hornet
+            this.p.push(part.create("anvil/hornet_big_gun", -3.0, -50.0, 2));
+            this.p.push(part.create("anvil/hornet_big_gun", -3.0, 50.0, 3));
+            this.p.push(part.create("anvil/hornet_wings_left", -5.0, -35.0, 6)); // 2
+            this.p.push(part.create("anvil/hornet_wings_right", -5.0, 35.0, 6)); // 3
+            this.p.push(part.create("anvil/hornet_intake_left", 15.0, -17.0, 6));
+            this.p.push(part.create("anvil/hornet_intake_right", 15.0, 17.0, 6));
+            this.p.push(part.create("anvil/hornet_main_hull", 0.0, 0.0, 6)); // 6
+            this.p.push(part.create("anvil/hornet_thruster", -32.0, 0.0, 6));
+            this.p.push(part.create("anvil/hornet_cockpit", 33.0, 0.0, 6)); // 8
+            this.p.push(part.create("anvil/hornet_tail", -43.0, 0.0, 6));
+            this.p.push(part.create("anvil/hornet_ball_turret", -3.0, 0.0, 6)); // 10
+            this.p.push(part.create("anvil/hornet_big_gun", 3.0, -7.0, 10));
+            this.p.push(part.create("anvil/hornet_big_gun", 3.0, 7.0, 10));
             break;
-        case 1: // Team 1 medium fighter
-            this.p.push(part.create("engine1", -35.0, 0.0, 1));
-            this.p.push(part.create("hull1", 0.0, 0.0, 1));
-            this.p.push(part.create("system1", -15.0, 0.0, 1));
-            this.p.push(part.create("blaster1left", -15.0, -22.0, 1));
-            this.p.push(part.create("blaster1right", -15.0, 22.0, 1));
+        case 1: // Scythe
+            this.p.push(part.create("vanduul/scythe_small_gun", 42.0, -13.0, 9)); // 0
+            this.p.push(part.create("vanduul/scythe_small_gun", 42.0, -7.0, 9)); // 1
+            this.p.push(part.create("vanduul/scythe_medium_gun", 30.0, -45.0, 4)); // 2
+            this.p.push(part.create("vanduul/scythe_big_gun", 50.0, 40.0, 5)); // 3
+            this.p.push(part.create("vanduul/scythe_gun_arm", 10.0, -30.0, 8)); // 4
+            this.p.push(part.create("vanduul/scythe_blade_arm", 15.0, 32.0, 8)); // 5
+            this.p.push(part.create("vanduul/scythe_thruster", -10.0, -10.0, 8)); // 6
+            this.p.push(part.create("vanduul/scythe_thruster", -10.0, 10.0, 8)); // 7
+            this.p.push(part.create("vanduul/scythe_main_hull", 0.0, 0.0, 8)); // 8
+            this.p.push(part.create("vanduul/scythe_cockpit", 25.0, -10.0, 8)); // 9
+            this.p.push(part.create("vanduul/scythe_blade", 62.0, 60.0, 5)); // 10
             break;
-        case 2: // Team 1 heavy fighter
-            this.p.push(part.create("blaster1left", -20.0, -22.0, 6));
-            this.p.push(part.create("blaster1right", -20.0, 22.0, 6));
-            this.p.push(part.create("blaster1left", 15.0, -12.0, 6));
-            this.p.push(part.create("blaster1right", 15.0, 12.0, 6));
-            this.p.push(part.create("engine1", -43.0, 14.0, 7));
-            this.p.push(part.create("engine1", -43.0, -14.0, 7));
-            this.p.push(part.create("hull1", 0.0, 0.0, 6));
-            this.p.push(part.create("hull3", -35.0, 0.0, 6));
-            this.p.push(part.create("system1", -15.0, 0.0, 6));
-            break;
-        case 3: // Team 2 light fighter
-            this.p.push(part.create("blaster1", 30.0, 0.0, 2));
-            this.p.push(part.create("engine2", -25.0, 0.0, 2));
-            this.p.push(part.create("hull2", 0.0, 0.0, 2));
-            this.p.push(part.create("system1", 0.0, 0.0, 2));
-            break;
-        case 4: // Team 2 medium fighter
-            this.p.push(part.create("blaster1left", -10.0, -20.0, 3));
-            this.p.push(part.create("blaster1right", -10.0, 20.0, 3));
-            this.p.push(part.create("engine2", -25.0, 0.0, 3));
-            this.p.push(part.create("hull2", 0.0, 0.0, 3));
-            this.p.push(part.create("system1", 0.0, 0.0, 3));
-            break;
-        case 5: // Team 2 heavy fighter
-            this.p.push(part.create("blaster1", 30.0, 0.0, 4));
-            this.p.push(part.create("blaster1left", -10.0, -20.0, 4));
-            this.p.push(part.create("blaster1right", -10.0, 20.0, 4));
-            this.p.push(part.create("engine2", -25.0, 0.0, 4));
-            this.p.push(part.create("hull2", 0.0, 0.0, 4));
-            this.p.push(part.create("system1", 0.0, 0.0, 4));
-            break;
-        case 6: // Team 3 light fighter
-            this.p.push(part.create("blaster1left", 15.0, -10.0, 3));
-            this.p.push(part.create("blaster1right", 15.0, 10.0, 3));
-            this.p.push(part.create("engine2", -5.0, 0.0, 3));
-            this.p.push(part.create("hull5", 0.0, 0.0, 3));
-            this.p.push(part.create("system2", 20.0, 0.0, 3));
-            break;
-        case 7: // Team 3 medium fighter
-            this.p.push(part.create("engine2", -25.0, 0.0, 2));
-            this.p.push(part.create("blaster1", 40.0, 0.0, 2));
-            this.p.push(part.create("hull4", 0.0, 0.0, 2));
-            this.p.push(part.create("system2", 20.0, 0.0, 2));
-            this.p.push(part.create("shield1", 0.0, 0.0, 2));
-            break;
-        case 8: // Team 3 heavy fighter
-            this.p.push(part.create("engine2", -35.0, 0.0, 4));
-            this.p.push(part.create("blaster1left", 5.0, -25.0, 4));
-            this.p.push(part.create("blaster1right", 5.0, 25.0, 4));
-            this.p.push(part.create("hull5", 30.0, 0.0, 3));
-            this.p.push(part.create("hull4", -10.0, 0.0, 3));
-            this.p.push(part.create("shield1", 0.0, 0.0, 4));
-            this.p.push(part.create("system2", 30.0, 0.0, 3));
-            break;
+//         case 0: // Team 1 light fighter
+//             this.p.push(part.create("blaster1", 25.0, 0.0, 2));
+//             this.p.push(part.create("engine1", -35.0, 0.0, 2));
+//             this.p.push(part.create("hull1", 0.0, 0.0, 2));
+//             this.p.push(part.create("system1", -15.0, 0.0, 2));
+//             break;
+//         case 1: // Team 1 medium fighter
+//             this.p.push(part.create("engine1", -35.0, 0.0, 1));
+//             this.p.push(part.create("hull1", 0.0, 0.0, 1));
+//             this.p.push(part.create("system1", -15.0, 0.0, 1));
+//             this.p.push(part.create("blaster1left", -15.0, -22.0, 1));
+//             this.p.push(part.create("blaster1right", -15.0, 22.0, 1));
+//             break;
+//         case 2: // Team 1 heavy fighter
+//             this.p.push(part.create("blaster1left", -20.0, -22.0, 6));
+//             this.p.push(part.create("blaster1right", -20.0, 22.0, 6));
+//             this.p.push(part.create("blaster1left", 15.0, -12.0, 6));
+//             this.p.push(part.create("blaster1right", 15.0, 12.0, 6));
+//             this.p.push(part.create("engine1", -43.0, 14.0, 7));
+//             this.p.push(part.create("engine1", -43.0, -14.0, 7));
+//             this.p.push(part.create("hull1", 0.0, 0.0, 6));
+//             this.p.push(part.create("hull3", -35.0, 0.0, 6));
+//             this.p.push(part.create("system1", -15.0, 0.0, 6));
+//             break;
+//         case 3: // Team 2 light fighter
+//             this.p.push(part.create("blaster1", 30.0, 0.0, 2));
+//             this.p.push(part.create("engine2", -25.0, 0.0, 2));
+//             this.p.push(part.create("hull2", 0.0, 0.0, 2));
+//             this.p.push(part.create("system1", 0.0, 0.0, 2));
+//             break;
+//         case 4: // Team 2 medium fighter
+//             this.p.push(part.create("blaster1left", -10.0, -20.0, 3));
+//             this.p.push(part.create("blaster1right", -10.0, 20.0, 3));
+//             this.p.push(part.create("engine2", -25.0, 0.0, 3));
+//             this.p.push(part.create("hull2", 0.0, 0.0, 3));
+//             this.p.push(part.create("system1", 0.0, 0.0, 3));
+//             break;
+//         case 5: // Team 2 heavy fighter
+//             this.p.push(part.create("blaster1", 30.0, 0.0, 4));
+//             this.p.push(part.create("blaster1left", -10.0, -20.0, 4));
+//             this.p.push(part.create("blaster1right", -10.0, 20.0, 4));
+//             this.p.push(part.create("engine2", -25.0, 0.0, 4));
+//             this.p.push(part.create("hull2", 0.0, 0.0, 4));
+//             this.p.push(part.create("system1", 0.0, 0.0, 4));
+//             break;
+//         case 6: // Team 3 light fighter
+//             this.p.push(part.create("blaster1left", 15.0, -10.0, 3));
+//             this.p.push(part.create("blaster1right", 15.0, 10.0, 3));
+//             this.p.push(part.create("engine2", -5.0, 0.0, 3));
+//             this.p.push(part.create("hull5", 0.0, 0.0, 3));
+//             this.p.push(part.create("system2", 20.0, 0.0, 3));
+//             break;
+//         case 7: // Team 3 medium fighter
+//             this.p.push(part.create("engine2", -25.0, 0.0, 2));
+//             this.p.push(part.create("blaster1", 40.0, 0.0, 2));
+//             this.p.push(part.create("hull4", 0.0, 0.0, 2));
+//             this.p.push(part.create("system2", 20.0, 0.0, 2));
+//             this.p.push(part.create("shield1", 0.0, 0.0, 2));
+//             break;
+//         case 8: // Team 3 heavy fighter
+//             this.p.push(part.create("engine2", -35.0, 0.0, 4));
+//             this.p.push(part.create("blaster1left", 5.0, -25.0, 4));
+//             this.p.push(part.create("blaster1right", 5.0, 25.0, 4));
+//             this.p.push(part.create("hull5", 30.0, 0.0, 3));
+//             this.p.push(part.create("hull4", -10.0, 0.0, 3));
+//             this.p.push(part.create("shield1", 0.0, 0.0, 4));
+//             this.p.push(part.create("system2", 30.0, 0.0, 3));
+//             break;
         }
     }
     
@@ -451,6 +613,57 @@ function ship(pos, rot, typ, col) {
             case "shield1":
                 this.wgt += 2.5;
                 break;
+            
+            // Scythe parts
+            case "vanduul/scythe_big_gun": this.wgt += 0.5; if(this.p[i].hlt > 0.2) this.gns++; break;
+            case "vanduul/scythe_blade": this.wgt += 1.5; break;
+            case "vanduul/scythe_gun_arm": this.wgt += 0.4; break;
+            case "vanduul/scythe_medium_gun": this.wgt += 0.4; if(this.p[i].hlt > 0.2) this.gns++; break;
+            case "vanduul/scythe_blade_arm": this.wgt += 0.5; break;
+            case "vanduul/scythe_cockpit": this.wgt += 0.2; if(this.p[i].hlt > 0.2) this.sys++; break;
+            case "vanduul/scythe_main_hull": this.wgt += 1.5; break;
+            case "vanduul/scythe_small_gun": this.wgt += 0.2; if(this.p[i].hlt > 0.2) this.gns++; break;
+            case "vanduul/scythe_thruster":
+                this.wgt += 0.4;
+                if(this.p[i].hlt > 0.2) this.acc += 2.0;
+                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3) {
+                    b.push(new frag(
+                        {
+                            x: this.pos.x + this.nrm.x * (this.p[i].x - 15.0) - this.nrm.y * this.p[i].y,
+                            y: pos.y + this.nrm.y * (this.p[i].x - 15.0) + this.nrm.x * this.p[i].y
+                        },
+                        this.rot + Math.PI + Math.random() * 1.4 - 0.7,
+                        this.col,
+                        2
+                    )); 
+                }
+                break;
+        
+            // Hornet parts
+            case "anvil/hornet_ball_turret": this.wgt += 0.5; break;
+            case "anvil/hornet_big_gun": this.wgt += 0.4; if(this.p[i].hlt > 0.2) this.gns++; break;
+            case "anvil/hornet_cockpit": this.wgt += 0.3; if(this.p[i].hlt > 0.2) this.sys++; break;
+            case "anvil/hornet_intake_left": this.wgt += 0.2; break;
+            case "anvil/hornet_intake_right": this.wgt += 0.2; break;
+            case "anvil/hornet_main_hull": this.wgt += 1.5; break;
+            case "anvil/hornet_tail": this.wgt += 0.3; break;
+            case "anvil/hornet_thruster":
+                this.wgt += 0.4;
+                if(this.p[i].hlt > 0.2) this.acc += 3.0;
+                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3) {
+                    b.push(new frag(
+                        {
+                            x: this.pos.x + this.nrm.x * (this.p[i].x - 15.0) - this.nrm.y * this.p[i].y,
+                            y: pos.y + this.nrm.y * (this.p[i].x - 15.0) + this.nrm.x * this.p[i].y
+                        },
+                        this.rot + Math.PI + Math.random() * 1.4 - 0.7,
+                        this.col,
+                        2
+                    )); 
+                }
+                break;
+            case "anvil/hornet_wings_left": this.wgt += 0.5; break;
+            case "anvil/hornet_wings_right": this.wgt += 0.5; break;
             }
             c.restore();
         } else {
@@ -465,7 +678,7 @@ function ship(pos, rot, typ, col) {
                 Math.random() * 6.3,
                 this.col,
                 3, this.p[i].part,
-                a[i].del + Math.random() * 0.1 - 0.5,
+                this.del + Math.random() * 0.1 - 0.5,
                 {x: this.spd.x + Math.random() * 2.0 - 1.0, y: this.spd.y + Math.random() * 2.0 - 1.0}
             ));
         }
@@ -476,10 +689,10 @@ function ship(pos, rot, typ, col) {
             else this.respawn--;
             if(!this.respawn) {
                 var deg = Math.random() * Math.PI * 2.0;
-                this.col = Math.floor(Math.random() * 3);
+                this.col = Math.floor(Math.random() * 2);
                 this.pos = {x:Math.cos(deg) * 7000, y:Math.sin(deg) * 7000};
                 this.rot = Math.random() * Math.PI * 2.0;
-                this.createShip(Math.floor(Math.random() * 3) + this.col * 3);
+                this.createShip(this.col);
                 this.trg = Math.floor(Math.random() * a.length);
                 
                 // Give ship full speed towards center
@@ -534,17 +747,49 @@ function ship(pos, rot, typ, col) {
                     this.lod = 15; // Load time 15 frames
                     
                     // Create bullets
-                    for(i = 0; i < this.p.length; i++) if(this.p[i].hlt >= 0.2 && (this.p[i].part == "blaster1" || this.p[i].part == "blaster1left" || this.p[i].part == "blaster1right")) {
-                        b.push(new frag(
-                            {
-                                x: this.pos.x + this.nrm.x * this.p[i].x - this.nrm.y * this.p[i].y,
-                                y: this.pos.y + this.nrm.y * this.p[i].x + this.nrm.x * this.p[i].y
-                            },
-                            this.rot,
-                            this.col, 0, false, false,
-                            {x: this.spd.x + this.nrm.x * 30.0, y: this.spd.y + this.nrm.y * 30.0}
-                            //pos, rot, col, typ, sub, del, spd
-                        ));
+                    for(i = 0; i < this.p.length; i++) if(this.p[i].hlt >= 0.2) {
+                        switch(this.p[i].part) {
+                        case "blaster1":
+                        case "blaster1left":
+                        case "blaster1right":
+                        case "vanduul/scythe_medium_gun":
+                        case "anvil/hornet_big_gun":
+                            b.push(new frag(
+                                {
+                                    x: this.pos.x + this.nrm.x * this.p[i].x - this.nrm.y * this.p[i].y,
+                                    y: this.pos.y + this.nrm.y * this.p[i].x + this.nrm.x * this.p[i].y
+                                },
+                                this.rot,
+                                this.col, 0, false, false,
+                                {x: this.spd.x + this.nrm.x * 30.0, y: this.spd.y + this.nrm.y * 30.0}
+                                //pos, rot, col, typ, sub, del, spd
+                            ));
+                            break;
+                        case "vanduul/scythe_small_gun":
+                            b.push(new frag(
+                                {
+                                    x: this.pos.x + this.nrm.x * this.p[i].x - this.nrm.y * this.p[i].y,
+                                    y: this.pos.y + this.nrm.y * this.p[i].x + this.nrm.x * this.p[i].y
+                                },
+                                this.rot,
+                                this.col, 5, false, false,
+                                {x: this.spd.x + this.nrm.x * 30.0, y: this.spd.y + this.nrm.y * 30.0}
+                                //pos, rot, col, typ, sub, del, spd
+                            ));
+                            break;
+                        case "vanduul/scythe_big_gun":
+                            b.push(new frag(
+                                {
+                                    x: this.pos.x + this.nrm.x * this.p[i].x - this.nrm.y * this.p[i].y,
+                                    y: this.pos.y + this.nrm.y * this.p[i].x + this.nrm.x * this.p[i].y
+                                },
+                                this.rot,
+                                this.col, 4, false, false,
+                                {x: this.spd.x + this.nrm.x * 30.0, y: this.spd.y + this.nrm.y * 30.0}
+                                //pos, rot, col, typ, sub, del, spd
+                            ));
+                            break;
+                        }
                     }
                 }
             }
@@ -691,7 +936,7 @@ function ship(pos, rot, typ, col) {
     this.trg = Math.floor(Math.random() * a.length);
 }
 var a = new Array();
-a.push(new ship({x:0, y:0}, 0, Math.floor(Math.random() * 6),0));
+a.push(new ship({x:0, y:0}, 0, Math.floor(Math.random() * 2),0));
 var b = new Array();
 
 function init() {
@@ -722,10 +967,10 @@ function loop() {
             var curship = 0;
             a = new Array();
             for(var i = 0; i < players; i++) {
-                curteam = i%3;
+                curteam = i%2;
                 
                 // Team 2 needs fewer ships to balance the game
-                curship = Math.floor(Math.random() * 3) + curteam * 3;
+                curship = curteam;
                 a.push(new ship(
                     {x:Math.cos(curteam * Math.PI * 0.66 + i * 0.1) * 5000 + Math.random() * 500 - 250, y:Math.sin(curteam * Math.PI * 0.66 + i * 0.1) * 5000 + Math.random() * 500 - 250}, // Position
                     Math.random() * Math.PI * 2.0, // Direction
