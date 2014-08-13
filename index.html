@@ -20,6 +20,7 @@ var isshooting = false;
 var isaccelerating = false;
 var iskeyboardcontrol = false;
 var isturning = 0;
+var ispaused = false;
 var trg = {x: 0, y: 0};
 
 var part = {
@@ -360,14 +361,15 @@ function frag(pos, rot, col, typ, sub, del, spd) {
     
     // Move this frag
     this.moveFrag = function() {
+        var spd = (ispaused ? 0.1 : 1.0);
         if(this.lif) {
-            this.lif--;
+            this.lif -= spd;
             if(this.lif) {
                 
                 // Movement
-                this.pos.x += this.spd.x;
-                this.pos.y += this.spd.y;
-                this.rot += this.del;
+                this.pos.x += this.spd.x * spd;
+                this.pos.y += this.spd.y * spd;
+                this.rot += this.del * spd;
                 
                 // Hit
                 var ppos;
@@ -447,12 +449,12 @@ function frag(pos, rot, col, typ, sub, del, spd) {
         if(sub) this.sub = sub;
         if(del) this.del = del;
         switch(this.typ) {
-        case 0: this.lif = 100; break; // Live for 100 frames
-        case 1: this.lif = 20; break; // Live for 10 frames
-        case 2: this.lif = 10; break; // Live for 10 frames
-        case 3: this.lif = 200; break; // Live for 200 frames
-        case 4: this.lif = 100; break; // Live for 100 frames
-        case 5: this.lif = 100; break; // Live for 100 frames
+        case 0: this.lif = 90 + Math.random() * 20.0; break; // Blast
+        case 1: this.lif = 15 + Math.random() * 10.0; break; // Explosion
+        case 2: this.lif = 7 + Math.random() * 3.0; break; // Engine fire
+        case 3: this.lif = 150 + Math.random() * 150.0; break; // Ship part
+        case 4: this.lif = 90 + Math.random() * 20.0; break; // Big blast
+        case 5: this.lif = 90 + Math.random() * 20.0; break; // Small blast
         }
         if(spd) this.spd = spd;
         else switch(this.typ) {
@@ -644,6 +646,7 @@ function ship(pos, rot, typ, col) {
     
     // Function for drawing this ship
     this.drawShip = function(pos, rot) {
+        var spd = (ispaused ? 0.1 : 1.0);
         if(!pos) pos = this.pos;
         if(!rot) rot = this.rot;
         this.wgt = 0;
@@ -670,7 +673,7 @@ function ship(pos, rot, typ, col) {
             case "engine1":
                 this.wgt += 0.2;
                 if(this.p[i].hlt > 0.2) this.acc += 1.0;
-                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3) {
+                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3 * spd) {
                     b.push(new frag(
                         {
                             x: this.pos.x + this.nrm.x * (this.p[i].x - 15.0) - this.nrm.y * this.p[i].y,
@@ -685,7 +688,7 @@ function ship(pos, rot, typ, col) {
             case "engine2":
                 this.wgt += 0.3;
                 if(this.p[i].hlt > 0.2) this.acc += 1.2;
-                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3) {
+                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3 * spd) {
                     b.push(new frag(
                         {
                             x: this.pos.x + this.nrm.x * (this.p[i].x - 25.0) - this.nrm.y * this.p[i].y,
@@ -733,7 +736,7 @@ function ship(pos, rot, typ, col) {
             case "vanduul/scythe_thruster":
                 this.wgt += 0.4;
                 if(this.p[i].hlt > 0.2) this.acc += 2.0;
-                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3) {
+                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3 * spd) {
                     b.push(new frag(
                         {
                             x: this.pos.x + this.nrm.x * (this.p[i].x - 15.0) - this.nrm.y * this.p[i].y,
@@ -757,7 +760,7 @@ function ship(pos, rot, typ, col) {
             case "anvil/hornet_thruster":
                 this.wgt += 0.4;
                 if(this.p[i].hlt > 0.2) this.acc += 3.0;
-                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3) {
+                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3 * spd) {
                     b.push(new frag(
                         {
                             x: this.pos.x + this.nrm.x * (this.p[i].x - 15.0) - this.nrm.y * this.p[i].y,
@@ -780,7 +783,7 @@ function ship(pos, rot, typ, col) {
             case "rsi/aurora_thruster":
                 this.wgt += 0.3;
                 if(this.p[i].hlt > 0.2) this.acc += 1.5;
-                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3) {
+                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3 * spd) {
                     b.push(new frag(
                         {
                             x: this.pos.x + this.nrm.x * (this.p[i].x - 15.0) - this.nrm.y * this.p[i].y,
@@ -802,7 +805,7 @@ function ship(pos, rot, typ, col) {
             case "origin/300i_thruster":
                 this.wgt += 0.5;
                 if(this.p[i].hlt > 0.2) this.acc += 2.5;
-                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3) {
+                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3 * spd) {
                     b.push(new frag(
                         {
                             x: this.pos.x + this.nrm.x * (this.p[i].x - 15.0) - this.nrm.y * this.p[i].y,
@@ -877,12 +880,13 @@ function ship(pos, rot, typ, col) {
     
     // Move this ship
     this.moveShip = function() {
+        var spd = (ispaused ? 0.1 : 1.0);
         if(this.wgt) {
             
             // Movement
-            this.pos.x += this.spd.x;
-            this.pos.y += this.spd.y;
-            this.rot += this.del;
+            this.pos.x += this.spd.x * spd;
+            this.pos.y += this.spd.y * spd;
+            this.rot += this.del * spd;
             this.nrm = {x: Math.cos(this.rot), y: Math.sin(this.rot)};
             
             // Acceleration
@@ -906,7 +910,7 @@ function ship(pos, rot, typ, col) {
             
             // Shooting
             if(this.gns) {
-                if(this.lod > 0) this.lod--;
+                if(this.lod > 0) this.lod -= spd;
                 if(this.fir && this.lod <= 0) {
                     this.lod = 15; // Load time 15 frames
                     
@@ -1122,8 +1126,9 @@ function doneload() {
 
 // The main loop
 function loop() {
+    var spd = (ispaused ? 0.1 : 1.0);
     if(waitforit > 0) {
-        waitforit--;
+        waitforit -= spd;
         zoomtrg = zoomtrg * 0.99;
         if(waitforit <= 0) {
             players = 12;
@@ -1177,7 +1182,7 @@ function loop() {
             zoomtrg = 1.0 + Math.sqrt((a[a[camid].trg].pos.x - a[camid].pos.x) * (a[a[camid].trg].pos.x - a[camid].pos.x) + (a[a[camid].trg].pos.y - a[camid].pos.y) * (a[a[camid].trg].pos.y - a[camid].pos.y)) * 0.0025;
             if(zoomtrg > 4.0) zoomtrg = 4.0;
         }
-    } else waitcam--;
+    } else waitcam -= spd;
     zoom = zoom + (zoomtrg - zoom) * 0.1;
     c.save();
     c.scale(1 / zoom, 1 / zoom);
@@ -1278,6 +1283,7 @@ function startkeyinput(e) {
 }
 function stopkeyinput(e) {
     switch(e.keyCode) {
+    case 80: ispaused = (ispaused ? false : true); break; // P for pause, which is actually just slow motion toggle
     case 81: isshooting = false; break;
     case 73: isaccelerating = false; break;
     case 74: isturning = 0; break;
@@ -1289,6 +1295,6 @@ function stopkeyinput(e) {
 <body onload='init()' onmouseup='stopshooting(event)' style='margin: 0px;' onkeydown='startkeyinput(event)' onkeyup='stopkeyinput(event)'>
 <p><a href='http://robertsspaceindustries.com/'>Star Citizen Arena Commander</a> mod for Cartoon Space</p>
 <canvas id="canvas" width='1200' height='800' onmousedown='startshooting()' onmousemove='movetarget(event)'></canvas>
-<p id="asdf"></p><p id="debug">Accelerate: I, Turn left: J, Turn right: L, Fire: Q</p>
+<p id="asdf"></p><p id="debug">Accelerate: I, Turn left: J, Turn right: L, Fire: Q, Slow motion: P</p>
 </body>
 </html>
