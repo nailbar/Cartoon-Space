@@ -134,6 +134,14 @@ var part = {
         case "origin/300i_wing_top": return 95;
         case "origin/300i_wing_topbroken": return 96;
         
+        // Glaive parts
+        case "vanduul/scythe_big_gun_left": return 97;
+        case "vanduul/scythe_blade_left": return 98;
+        case "vanduul/scythe_blade_arm_left": return 99;
+        case "vanduul/scythe_big_gun_leftbroken": return 100;
+        case "vanduul/scythe_blade_leftbroken": return 101;
+        case "vanduul/scythe_blade_arm_leftbroken": return 102;
+        
         default: 
             document.getElementById('debug').innerHTML = "part.id('" + part_name + "'): part not found!";
             return -1;
@@ -249,13 +257,21 @@ var part = {
         case 95: return "origin/300i_wing_top";
         case 96: return "origin/300i_wing_topbroken";
         
+        // Glaive parts
+        case 97: return "vanduul/scythe_big_gun_left";
+        case 98: return "vanduul/scythe_blade_left";
+        case 99: return "vanduul/scythe_blade_arm_left";
+        case 100: return "vanduul/scythe_big_gun_leftbroken";
+        case 101: return "vanduul/scythe_blade_leftbroken";
+        case 102: return "vanduul/scythe_blade_arm_leftbroken";
+        
         default: 
             document.getElementById('debug').innerHTML = "part.name(" + part_id + "): part not found!";
             return -1;
         }
     },
     'init': function() {
-        for(var i = 0; i < 97; i++) {
+        for(var i = 0; i < 103; i++) {
           toload++;
           totalload++;
           p[i] = new Image();
@@ -324,6 +340,11 @@ var part = {
         case "origin/300i_wing_left": return {part: part_name, x: posx, y: posy, hlt: 0.6, parent: parent_id};
         case "origin/300i_wing_right": return {part: part_name, x: posx, y: posy, hlt: 0.6, parent: parent_id};
         case "origin/300i_wing_top": return {part: part_name, x: posx, y: posy, hlt: 0.6, parent: parent_id};
+        
+        // Glaive parts
+        case "vanduul/scythe_big_gun_left": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        case "vanduul/scythe_blade_left": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id};
+        case "vanduul/scythe_blade_arm_left": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
         
         default: return "part.create('" + part_name + "'): part not found!";
         }
@@ -573,6 +594,20 @@ function ship(pos, rot, typ, col) {
             this.p.push(part.create("origin/300i_cockpit", 13.0, 0.0, 5));
             this.p.push(part.create("origin/300i_wing_top", -63.0, 0.0, 7));
             break;
+        case 4: // Glaive
+            this.p.push(part.create("vanduul/scythe_small_gun", 42.0, 3.0, 9));
+            this.p.push(part.create("vanduul/scythe_small_gun", 42.0, -3.0, 9));
+            this.p.push(part.create("vanduul/scythe_big_gun_left", 50.0, -40.0, 4));
+            this.p.push(part.create("vanduul/scythe_big_gun", 50.0, 40.0, 5));
+            this.p.push(part.create("vanduul/scythe_blade_arm_left", 15.0, -32.0, 8)); // 4
+            this.p.push(part.create("vanduul/scythe_blade_arm", 15.0, 32.0, 8)); // 5
+            this.p.push(part.create("vanduul/scythe_thruster", -10.0, -10.0, 8));
+            this.p.push(part.create("vanduul/scythe_thruster", -10.0, 10.0, 8));
+            this.p.push(part.create("vanduul/scythe_main_hull", 0.0, 0.0, 8)); // 8
+            this.p.push(part.create("vanduul/scythe_cockpit", 25.0, 0.0, 8)); // 9
+            this.p.push(part.create("vanduul/scythe_blade_left", 62.0, -60.0, 4));
+            this.p.push(part.create("vanduul/scythe_blade", 62.0, 60.0, 5));
+            break;
 //         case 0: // Team 1 light fighter
 //             this.p.push(part.create("blaster1", 25.0, 0.0, 2));
 //             this.p.push(part.create("engine1", -35.0, 0.0, 2));
@@ -820,6 +855,11 @@ function ship(pos, rot, typ, col) {
             case "origin/300i_wing_left": this.wgt += 0.3; break;
             case "origin/300i_wing_right": this.wgt += 0.3; break;
             case "origin/300i_wing_top": this.wgt += 0.3; break;
+        
+            // Glaive parts
+            case "vanduul/scythe_big_gun_left": this.wgt += 0.5; if(this.p[i].hlt > 0.2) this.gns++; break;
+            case "vanduul/scythe_blade_left": this.wgt += 1.5; break;
+            case "vanduul/scythe_blade_arm_left": this.wgt += 0.5; break;
             }
             c.restore();
         } else {
@@ -853,10 +893,16 @@ function ship(pos, rot, typ, col) {
                     var curship = 0; // Hornet
                     break;
                 case 1: // Vanduul
-                    var curship = 1; // Scythe
+                    switch(Math.floor(Math.random() * 3.0)) {
+                    case 0: case 1: var curship = 1; break; // Scythe
+                    case 2: var curship = 4; break; // Glaive
+                    }
                     break;
                 case 2: // Civilian
-                    var curship = 2 + Math.floor(Math.random() * 2.0); // Aurora or i300
+                    switch(Math.floor(Math.random() * 2.0)) {
+                    case 0: var curship = 2; break; // Aurora
+                    case 1: var curship = 3; break; // 300i
+                    }
                     break;
                 }
                 this.createShip(curship);
@@ -946,6 +992,7 @@ function ship(pos, rot, typ, col) {
                             ));
                             break;
                         case "vanduul/scythe_big_gun":
+                        case "vanduul/scythe_big_gun_left":
                             b.push(new frag(
                                 {
                                     x: this.pos.x + this.nrm.x * this.p[i].x - this.nrm.y * this.p[i].y,
@@ -1104,7 +1151,7 @@ function ship(pos, rot, typ, col) {
     this.trg = Math.floor(Math.random() * a.length);
 }
 var a = new Array();
-a.push(new ship({x:0, y:0}, 0, Math.floor(Math.random() * 4),0));
+a.push(new ship({x:0, y:0}, 0, Math.floor(Math.random() * 5),0));
 var b = new Array();
 
 function init() {
@@ -1144,11 +1191,16 @@ function loop() {
                     curship = 0; // Hornet
                     break;
                 case 1: // Vanduul
-                    curship = 1; // Scythe
+                    switch(Math.floor(Math.random() * 3.0)) {
+                    case 0: case 1: curship = 1; break; // Scythe
+                    case 2: curship = 4; break; // Glaive
+                    }
                     break;
                 case 2: // Civilian
-                    curship = 2 + Math.floor(Math.random() * 2.0); // Aurora or i300
-                    break;
+                    switch(Math.floor(Math.random() * 2.0)) {
+                    case 0: curship = 2; break; // Aurora
+                    case 1: curship = 3; break; // 300i
+                    }
                 }
                 a.push(new ship(
                     {x:Math.cos(curteam * Math.PI * 0.66 + i * 0.1) * 5000 + Math.random() * 500 - 250, y:Math.sin(curteam * Math.PI * 0.66 + i * 0.1) * 5000 + Math.random() * 500 - 250}, // Position
