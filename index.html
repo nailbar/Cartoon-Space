@@ -117,6 +117,22 @@ var part = {
         case "rsi/aurora_wing_right": return 81;
         case "rsi/aurora_wing_rightbroken": return 82;
         
+        // 300i parts
+        case "origin/300i_cockpit": return 83;
+        case "origin/300i_cockpitbroken": return 84;
+        case "origin/300i_hull_front": return 85;
+        case "origin/300i_hull_frontbroken": return 86;
+        case "origin/300i_hull_rear": return 87;
+        case "origin/300i_hull_rearbroken": return 88;
+        case "origin/300i_thruster": return 89;
+        case "origin/300i_thrusterbroken": return 90;
+        case "origin/300i_wing_left": return 91;
+        case "origin/300i_wing_leftbroken": return 92;
+        case "origin/300i_wing_right": return 93;
+        case "origin/300i_wing_rightbroken": return 94;
+        case "origin/300i_wing_top": return 95;
+        case "origin/300i_wing_topbroken": return 96;
+        
         default: 
             document.getElementById('debug').innerHTML = "part.id('" + part_name + "'): part not found!";
             return -1;
@@ -216,13 +232,29 @@ var part = {
         case 81: return "rsi/aurora_wing_right";
         case 82: return "rsi/aurora_wing_rightbroken";
         
+        // 300i parts
+        case 83: return "origin/300i_cockpit";
+        case 84: return "origin/300i_cockpitbroken";
+        case 85: return "origin/300i_hull_front";
+        case 86: return "origin/300i_hull_frontbroken";
+        case 87: return "origin/300i_hull_rear";
+        case 88: return "origin/300i_hull_rearbroken";
+        case 89: return "origin/300i_thruster";
+        case 90: return "origin/300i_thrusterbroken";
+        case 91: return "origin/300i_wing_left";
+        case 92: return "origin/300i_wing_leftbroken";
+        case 93: return "origin/300i_wing_right";
+        case 94: return "origin/300i_wing_rightbroken";
+        case 95: return "origin/300i_wing_top";
+        case 96: return "origin/300i_wing_topbroken";
+        
         default: 
             document.getElementById('debug').innerHTML = "part.name(" + part_id + "): part not found!";
             return -1;
         }
     },
     'init': function() {
-        for(var i = 0; i < 83; i++) {
+        for(var i = 0; i < 97; i++) {
           toload++;
           totalload++;
           p[i] = new Image();
@@ -282,6 +314,15 @@ var part = {
         case "rsi/aurora_thruster": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
         case "rsi/aurora_wing_left": return {part: part_name, x: posx, y: posy, hlt: 0.5, parent: parent_id};
         case "rsi/aurora_wing_right": return {part: part_name, x: posx, y: posy, hlt: 0.5, parent: parent_id};
+        
+        // 300i parts
+        case "origin/300i_cockpit": return {part: part_name, x: posx, y: posy, hlt: 1.7, parent: parent_id};
+        case "origin/300i_hull_front": return {part: part_name, x: posx, y: posy, hlt: 2.5, parent: parent_id};
+        case "origin/300i_hull_rear": return {part: part_name, x: posx, y: posy, hlt: 2.2, parent: parent_id};
+        case "origin/300i_thruster": return {part: part_name, x: posx, y: posy, hlt: 1.2, parent: parent_id};
+        case "origin/300i_wing_left": return {part: part_name, x: posx, y: posy, hlt: 0.6, parent: parent_id};
+        case "origin/300i_wing_right": return {part: part_name, x: posx, y: posy, hlt: 0.6, parent: parent_id};
+        case "origin/300i_wing_top": return {part: part_name, x: posx, y: posy, hlt: 0.6, parent: parent_id};
         
         default: return "part.create('" + part_name + "'): part not found!";
         }
@@ -367,8 +408,8 @@ function frag(pos, rot, col, typ, sub, del, spd) {
                             this.lif = 0;
                             switch(this.typ) {
                             case 0: a[i].p[prt].hlt -= Math.random() + 0.3; break;
-                            case 4: a[i].p[prt].hlt -= Math.random() + 0.6; break;
-                            case 5: a[i].p[prt].hlt -= Math.random() + 0.1; break;
+                            case 4: a[i].p[prt].hlt -= Math.random() + 0.5; break;
+                            case 5: a[i].p[prt].hlt -= Math.random() + 0.15; break;
                             }
                             
                             // Create explosion
@@ -517,6 +558,18 @@ function ship(pos, rot, typ, col) {
             this.p.push(part.create("rsi/aurora_thruster", -21.0, 0.0, 9));
             this.p.push(part.create("rsi/aurora_main_hull", 0.0, 0.0, 9)); // 9
             this.p.push(part.create("rsi/aurora_cockpit", 49.0, 0.0, 9)); // 10
+            break;
+        case 3: // 300i
+            this.p.push(part.create("vanduul/scythe_small_gun", 38.0, 0.0, 5));
+            this.p.push(part.create("anvil/hornet_big_gun", -47.0, -42.0, 3));
+            this.p.push(part.create("anvil/hornet_big_gun", -47.0, 42.0, 4));
+            this.p.push(part.create("origin/300i_wing_left", -40.0, -23.0, 5)); // 3
+            this.p.push(part.create("origin/300i_wing_right", -40.0, 23.0, 5)); // 4
+            this.p.push(part.create("origin/300i_hull_front", 5.0, 0.0, 5)); // 5
+            this.p.push(part.create("origin/300i_thruster", -70.0, 0.0, 7));
+            this.p.push(part.create("origin/300i_hull_rear", -52.0, 0.0, 5)); // 7
+            this.p.push(part.create("origin/300i_cockpit", 13.0, 0.0, 5));
+            this.p.push(part.create("origin/300i_wing_top", -63.0, 0.0, 7));
             break;
 //         case 0: // Team 1 light fighter
 //             this.p.push(part.create("blaster1", 25.0, 0.0, 2));
@@ -741,6 +794,29 @@ function ship(pos, rot, typ, col) {
                 break;
             case "rsi/aurora_wing_left": this.wgt += 0.3; break;
             case "rsi/aurora_wing_right": this.wgt += 0.3; break;
+            
+            // 300i parts
+            case "origin/300i_cockpit": this.wgt += 0.4; if(this.p[i].hlt > 0.2) this.sys++; break;
+            case "origin/300i_hull_front": this.wgt += 0.6; break;
+            case "origin/300i_hull_rear": this.wgt += 0.5; break;
+            case "origin/300i_thruster":
+                this.wgt += 0.5;
+                if(this.p[i].hlt > 0.2) this.acc += 2.5;
+                if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3) {
+                    b.push(new frag(
+                        {
+                            x: this.pos.x + this.nrm.x * (this.p[i].x - 15.0) - this.nrm.y * this.p[i].y,
+                            y: pos.y + this.nrm.y * (this.p[i].x - 15.0) + this.nrm.x * this.p[i].y
+                        },
+                        this.rot + Math.PI + Math.random() * 1.4 - 0.7,
+                        this.col,
+                        2
+                    )); 
+                }
+                break;
+            case "origin/300i_wing_left": this.wgt += 0.3; break;
+            case "origin/300i_wing_right": this.wgt += 0.3; break;
+            case "origin/300i_wing_top": this.wgt += 0.3; break;
             }
             c.restore();
         } else {
@@ -769,7 +845,18 @@ function ship(pos, rot, typ, col) {
                 this.col = Math.floor(Math.random() * 3);
                 this.pos = {x:Math.cos(deg) * 7000, y:Math.sin(deg) * 7000};
                 this.rot = Math.random() * Math.PI * 2.0;
-                this.createShip(this.col);
+                switch(this.col) {
+                case 0: // Military
+                    var curship = 0; // Hornet
+                    break;
+                case 1: // Vanduul
+                    var curship = 1; // Scythe
+                    break;
+                case 2: // Civilian
+                    var curship = 2 + Math.floor(Math.random() * 2.0); // Aurora or i300
+                    break;
+                }
+                this.createShip(curship);
                 this.trg = Math.floor(Math.random() * a.length);
                 
                 // Give ship full speed towards center
@@ -1013,7 +1100,7 @@ function ship(pos, rot, typ, col) {
     this.trg = Math.floor(Math.random() * a.length);
 }
 var a = new Array();
-a.push(new ship({x:0, y:0}, 0, Math.floor(Math.random() * 3),0));
+a.push(new ship({x:0, y:0}, 0, Math.floor(Math.random() * 4),0));
 var b = new Array();
 
 function init() {
@@ -1047,7 +1134,17 @@ function loop() {
                 curteam = i%3;
                 
                 // Team 2 needs fewer ships to balance the game
-                curship = curteam;
+                switch(curteam) {
+                case 0: // Military
+                    curship = 0; // Hornet
+                    break;
+                case 1: // Vanduul
+                    curship = 1; // Scythe
+                    break;
+                case 2: // Civilian
+                    curship = 2 + Math.floor(Math.random() * 2.0); // Aurora or i300
+                    break;
+                }
                 a.push(new ship(
                     {x:Math.cos(curteam * Math.PI * 0.66 + i * 0.1) * 5000 + Math.random() * 500 - 250, y:Math.sin(curteam * Math.PI * 0.66 + i * 0.1) * 5000 + Math.random() * 500 - 250}, // Position
                     Math.random() * Math.PI * 2.0, // Direction
