@@ -363,9 +363,9 @@ var part = {
         case "vanduul/scythe_blade_arm_left": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
         
         // Shields
-        case "shield2": return {part: part_name, x: posx, y: posy, hlt: 6.0, parent: parent_id, hit: 0};
-        case "shield3": return {part: part_name, x: posx, y: posy, hlt: 9.0, parent: parent_id, hit: 0};
-        case "shield4": return {part: part_name, x: posx, y: posy, hlt: 7.0, parent: parent_id, hit: 0};
+        case "shield2": return {part: part_name, x: posx, y: posy, hlt: 4.0, parent: parent_id, hit: 0};
+        case "shield3": return {part: part_name, x: posx, y: posy, hlt: 5.0, parent: parent_id, hit: 0};
+        case "shield4": return {part: part_name, x: posx, y: posy, hlt: 6.0, parent: parent_id, hit: 0};
         
         default: return "part.create('" + part_name + "'): part not found!";
         }
@@ -451,8 +451,8 @@ function frag(pos, rot, col, typ, sub, del, spd) {
                         // If part is hit, add damage
                         if(prt != -1) {
                             switch(this.typ) {
-                            case 0: damage = Math.random() + 0.3; break;
-                            case 4: damage = Math.random() + 0.5; break;
+                            case 0: damage = Math.random() + 0.25; break;
+                            case 4: damage = Math.random() + 0.4; break;
                             case 5: damage = Math.random() + 0.15; break;
                             }
                             a[i].p[prt].hit += damage;
