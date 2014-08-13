@@ -142,6 +142,14 @@ var part = {
         case "vanduul/scythe_blade_leftbroken": return 101;
         case "vanduul/scythe_blade_arm_leftbroken": return 102;
         
+        // Shields
+        case "shield2": return 103;
+        case "shield2broken": return 104;
+        case "shield3": return 105;
+        case "shield3broken": return 106;
+        case "shield4": return 107;
+        case "shield4broken": return 108;
+        
         default: 
             document.getElementById('debug').innerHTML = "part.id('" + part_name + "'): part not found!";
             return -1;
@@ -265,13 +273,21 @@ var part = {
         case 101: return "vanduul/scythe_blade_leftbroken";
         case 102: return "vanduul/scythe_blade_arm_leftbroken";
         
+        // Shields
+        case 103: return "shield2";
+        case 104: return "shield2broken";
+        case 105: return "shield3";
+        case 106: return "shield3broken";
+        case 107: return "shield4";
+        case 108: return "shield4broken";
+        
         default: 
             document.getElementById('debug').innerHTML = "part.name(" + part_id + "): part not found!";
             return -1;
         }
     },
     'init': function() {
-        for(var i = 0; i < 103; i++) {
+        for(var i = 0; i < 109; i++) {
           toload++;
           totalload++;
           p[i] = new Image();
@@ -345,6 +361,11 @@ var part = {
         case "vanduul/scythe_big_gun_left": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
         case "vanduul/scythe_blade_left": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id};
         case "vanduul/scythe_blade_arm_left": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        
+        // Shields
+        case "shield2": return {part: part_name, x: posx, y: posy, hlt: 6.0, parent: parent_id};
+        case "shield3": return {part: part_name, x: posx, y: posy, hlt: 9.0, parent: parent_id};
+        case "shield4": return {part: part_name, x: posx, y: posy, hlt: 7.0, parent: parent_id};
         
         default: return "part.create('" + part_name + "'): part not found!";
         }
@@ -555,6 +576,7 @@ function ship(pos, rot, typ, col) {
             this.p.push(part.create("anvil/hornet_ball_turret", -3.0, 0.0, 6)); // 10
             this.p.push(part.create("anvil/hornet_big_gun", 3.0, -7.0, 10));
             this.p.push(part.create("anvil/hornet_big_gun", 3.0, 7.0, 10));
+            this.p.push(part.create("shield3", -13.0, 0.0, 6));
             break;
         case 1: // Scythe
             this.p.push(part.create("vanduul/scythe_small_gun", 42.0, -13.0, 9)); // 0
@@ -568,6 +590,7 @@ function ship(pos, rot, typ, col) {
             this.p.push(part.create("vanduul/scythe_main_hull", 0.0, 0.0, 8)); // 8
             this.p.push(part.create("vanduul/scythe_cockpit", 25.0, -10.0, 8)); // 9
             this.p.push(part.create("vanduul/scythe_blade", 62.0, 60.0, 5)); // 10
+            this.p.push(part.create("shield4", 50.0, 0.0, 8));
             break;
         case 2: // Aurora
             this.p.push(part.create("vanduul/scythe_small_gun", 50.0, -12.0, 10));
@@ -581,6 +604,7 @@ function ship(pos, rot, typ, col) {
             this.p.push(part.create("rsi/aurora_thruster", -21.0, 0.0, 9));
             this.p.push(part.create("rsi/aurora_main_hull", 0.0, 0.0, 9)); // 9
             this.p.push(part.create("rsi/aurora_cockpit", 49.0, 0.0, 9)); // 10
+            this.p.push(part.create("shield2", 20.0, 0.0, 9));
             break;
         case 3: // 300i
             this.p.push(part.create("vanduul/scythe_small_gun", 38.0, 0.0, 5));
@@ -593,6 +617,7 @@ function ship(pos, rot, typ, col) {
             this.p.push(part.create("origin/300i_hull_rear", -52.0, 0.0, 5)); // 7
             this.p.push(part.create("origin/300i_cockpit", 13.0, 0.0, 5));
             this.p.push(part.create("origin/300i_wing_top", -63.0, 0.0, 7));
+            this.p.push(part.create("shield3", -20.0, 0.0, 5));
             break;
         case 4: // Glaive
             this.p.push(part.create("vanduul/scythe_small_gun", 42.0, 3.0, 9));
@@ -607,6 +632,7 @@ function ship(pos, rot, typ, col) {
             this.p.push(part.create("vanduul/scythe_cockpit", 25.0, 0.0, 8)); // 9
             this.p.push(part.create("vanduul/scythe_blade_left", 62.0, -60.0, 4));
             this.p.push(part.create("vanduul/scythe_blade", 62.0, 60.0, 5));
+            this.p.push(part.create("shield4", 50.0, 0.0, 8));
             break;
 //         case 0: // Team 1 light fighter
 //             this.p.push(part.create("blaster1", 25.0, 0.0, 2));
@@ -860,6 +886,11 @@ function ship(pos, rot, typ, col) {
             case "vanduul/scythe_big_gun_left": this.wgt += 0.5; if(this.p[i].hlt > 0.2) this.gns++; break;
             case "vanduul/scythe_blade_left": this.wgt += 1.5; break;
             case "vanduul/scythe_blade_arm_left": this.wgt += 0.5; break;
+            
+            // Shields
+            case "shield2": this.wgt += 0.01; if(this.p[i].hlt < 6.0) this.p[i].hlt += spd * 0.01; break;
+            case "shield3": this.wgt += 0.01; if(this.p[i].hlt < 9.0) this.p[i].hlt += spd * 0.01; break;
+            case "shield4": this.wgt += 0.01; if(this.p[i].hlt < 7.0) this.p[i].hlt += spd * 0.01; break;
             }
             c.restore();
         } else {
