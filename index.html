@@ -302,70 +302,70 @@ var part = {
     },
     'create': function(part_name, posx, posy, parent_id) {
         switch(part_name) {
-        case "hull1": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id};
-        case "hull2": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id};
-        case "hull3": return {part: part_name, x: posx, y: posy, hlt: 1.3, parent: parent_id};
-        case "engine1": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
-        case "engine2": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
-        case "system1": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
-        case "blaster1left": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id};
-        case "blaster1right": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id};
-        case "blaster1": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id};
-        case "shield1": return {part: part_name, x: posx, y: posy, hlt: 3.0, parent: parent_id};
-        case "hull4": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id};
-        case "hull5": return {part: part_name, x: posx, y: posy, hlt: 1.3, parent: parent_id};
-        case "system2": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        case "hull1": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id, hit: 0};
+        case "hull2": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id, hit: 0};
+        case "hull3": return {part: part_name, x: posx, y: posy, hlt: 1.3, parent: parent_id, hit: 0};
+        case "engine1": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
+        case "engine2": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
+        case "system1": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
+        case "blaster1left": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id, hit: 0};
+        case "blaster1right": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id, hit: 0};
+        case "blaster1": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id, hit: 0};
+        case "shield1": return {part: part_name, x: posx, y: posy, hlt: 3.0, parent: parent_id, hit: 0};
+        case "hull4": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id, hit: 0};
+        case "hull5": return {part: part_name, x: posx, y: posy, hlt: 1.3, parent: parent_id, hit: 0};
+        case "system2": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
         
         // Scythe parts
-        case "vanduul/scythe_big_gun": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
-        case "vanduul/scythe_blade": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id};
-        case "vanduul/scythe_gun_arm": return {part: part_name, x: posx, y: posy, hlt: 1.5, parent: parent_id};
-        case "vanduul/scythe_medium_gun": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id};
-        case "vanduul/scythe_blade_arm": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
-        case "vanduul/scythe_cockpit": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
-        case "vanduul/scythe_main_hull": return {part: part_name, x: posx, y: posy, hlt: 3.0, parent: parent_id};
-        case "vanduul/scythe_small_gun": return {part: part_name, x: posx, y: posy, hlt: 0.5, parent: parent_id};
-        case "vanduul/scythe_thruster": return {part: part_name, x: posx, y: posy, hlt: 1.5, parent: parent_id};
+        case "vanduul/scythe_big_gun": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
+        case "vanduul/scythe_blade": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id, hit: 0};
+        case "vanduul/scythe_gun_arm": return {part: part_name, x: posx, y: posy, hlt: 1.5, parent: parent_id, hit: 0};
+        case "vanduul/scythe_medium_gun": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id, hit: 0};
+        case "vanduul/scythe_blade_arm": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
+        case "vanduul/scythe_cockpit": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
+        case "vanduul/scythe_main_hull": return {part: part_name, x: posx, y: posy, hlt: 3.0, parent: parent_id, hit: 0};
+        case "vanduul/scythe_small_gun": return {part: part_name, x: posx, y: posy, hlt: 0.5, parent: parent_id, hit: 0};
+        case "vanduul/scythe_thruster": return {part: part_name, x: posx, y: posy, hlt: 1.5, parent: parent_id, hit: 0};
         
         // Hornet parts
-        case "anvil/hornet_ball_turret": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
-        case "anvil/hornet_big_gun": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
-        case "anvil/hornet_cockpit": return {part: part_name, x: posx, y: posy, hlt: 1.5, parent: parent_id};
-        case "anvil/hornet_intake_left": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
-        case "anvil/hornet_intake_right": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
-        case "anvil/hornet_main_hull": return {part: part_name, x: posx, y: posy, hlt: 2.5, parent: parent_id};
-        case "anvil/hornet_tail": return {part: part_name, x: posx, y: posy, hlt: 1.5, parent: parent_id};
-        case "anvil/hornet_thruster": return {part: part_name, x: posx, y: posy, hlt: 1.2, parent: parent_id};
-        case "anvil/hornet_wings_left": return {part: part_name, x: posx, y: posy, hlt: 1.3, parent: parent_id};
-        case "anvil/hornet_wings_right": return {part: part_name, x: posx, y: posy, hlt: 1.3, parent: parent_id};
+        case "anvil/hornet_ball_turret": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
+        case "anvil/hornet_big_gun": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
+        case "anvil/hornet_cockpit": return {part: part_name, x: posx, y: posy, hlt: 1.5, parent: parent_id, hit: 0};
+        case "anvil/hornet_intake_left": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
+        case "anvil/hornet_intake_right": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
+        case "anvil/hornet_main_hull": return {part: part_name, x: posx, y: posy, hlt: 2.5, parent: parent_id, hit: 0};
+        case "anvil/hornet_tail": return {part: part_name, x: posx, y: posy, hlt: 1.5, parent: parent_id, hit: 0};
+        case "anvil/hornet_thruster": return {part: part_name, x: posx, y: posy, hlt: 1.2, parent: parent_id, hit: 0};
+        case "anvil/hornet_wings_left": return {part: part_name, x: posx, y: posy, hlt: 1.3, parent: parent_id, hit: 0};
+        case "anvil/hornet_wings_right": return {part: part_name, x: posx, y: posy, hlt: 1.3, parent: parent_id, hit: 0};
         
         // Aurora parts
-        case "rsi/aurora_cockpit": return {part: part_name, x: posx, y: posy, hlt: 1.5, parent: parent_id};
-        case "rsi/aurora_intake_left": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id};
-        case "rsi/aurora_intake_right": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id};
-        case "rsi/aurora_main_hull": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id};
-        case "rsi/aurora_thruster": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
-        case "rsi/aurora_wing_left": return {part: part_name, x: posx, y: posy, hlt: 0.5, parent: parent_id};
-        case "rsi/aurora_wing_right": return {part: part_name, x: posx, y: posy, hlt: 0.5, parent: parent_id};
+        case "rsi/aurora_cockpit": return {part: part_name, x: posx, y: posy, hlt: 1.5, parent: parent_id, hit: 0};
+        case "rsi/aurora_intake_left": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id, hit: 0};
+        case "rsi/aurora_intake_right": return {part: part_name, x: posx, y: posy, hlt: 0.7, parent: parent_id, hit: 0};
+        case "rsi/aurora_main_hull": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id, hit: 0};
+        case "rsi/aurora_thruster": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
+        case "rsi/aurora_wing_left": return {part: part_name, x: posx, y: posy, hlt: 0.5, parent: parent_id, hit: 0};
+        case "rsi/aurora_wing_right": return {part: part_name, x: posx, y: posy, hlt: 0.5, parent: parent_id, hit: 0};
         
         // 300i parts
-        case "origin/300i_cockpit": return {part: part_name, x: posx, y: posy, hlt: 1.7, parent: parent_id};
-        case "origin/300i_hull_front": return {part: part_name, x: posx, y: posy, hlt: 2.5, parent: parent_id};
-        case "origin/300i_hull_rear": return {part: part_name, x: posx, y: posy, hlt: 2.2, parent: parent_id};
-        case "origin/300i_thruster": return {part: part_name, x: posx, y: posy, hlt: 1.2, parent: parent_id};
-        case "origin/300i_wing_left": return {part: part_name, x: posx, y: posy, hlt: 0.6, parent: parent_id};
-        case "origin/300i_wing_right": return {part: part_name, x: posx, y: posy, hlt: 0.6, parent: parent_id};
-        case "origin/300i_wing_top": return {part: part_name, x: posx, y: posy, hlt: 0.6, parent: parent_id};
+        case "origin/300i_cockpit": return {part: part_name, x: posx, y: posy, hlt: 1.7, parent: parent_id, hit: 0};
+        case "origin/300i_hull_front": return {part: part_name, x: posx, y: posy, hlt: 2.5, parent: parent_id, hit: 0};
+        case "origin/300i_hull_rear": return {part: part_name, x: posx, y: posy, hlt: 2.2, parent: parent_id, hit: 0};
+        case "origin/300i_thruster": return {part: part_name, x: posx, y: posy, hlt: 1.2, parent: parent_id, hit: 0};
+        case "origin/300i_wing_left": return {part: part_name, x: posx, y: posy, hlt: 0.6, parent: parent_id, hit: 0};
+        case "origin/300i_wing_right": return {part: part_name, x: posx, y: posy, hlt: 0.6, parent: parent_id, hit: 0};
+        case "origin/300i_wing_top": return {part: part_name, x: posx, y: posy, hlt: 0.6, parent: parent_id, hit: 0};
         
         // Glaive parts
-        case "vanduul/scythe_big_gun_left": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
-        case "vanduul/scythe_blade_left": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id};
-        case "vanduul/scythe_blade_arm_left": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id};
+        case "vanduul/scythe_big_gun_left": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
+        case "vanduul/scythe_blade_left": return {part: part_name, x: posx, y: posy, hlt: 2.0, parent: parent_id, hit: 0};
+        case "vanduul/scythe_blade_arm_left": return {part: part_name, x: posx, y: posy, hlt: 1.0, parent: parent_id, hit: 0};
         
         // Shields
-        case "shield2": return {part: part_name, x: posx, y: posy, hlt: 6.0, parent: parent_id};
-        case "shield3": return {part: part_name, x: posx, y: posy, hlt: 9.0, parent: parent_id};
-        case "shield4": return {part: part_name, x: posx, y: posy, hlt: 7.0, parent: parent_id};
+        case "shield2": return {part: part_name, x: posx, y: posy, hlt: 6.0, parent: parent_id, hit: 0};
+        case "shield3": return {part: part_name, x: posx, y: posy, hlt: 9.0, parent: parent_id, hit: 0};
+        case "shield4": return {part: part_name, x: posx, y: posy, hlt: 7.0, parent: parent_id, hit: 0};
         
         default: return "part.create('" + part_name + "'): part not found!";
         }
@@ -422,6 +422,7 @@ function frag(pos, rot, col, typ, sub, del, spd) {
                 var dis;
                 var prt;
                 var partid;
+                var damage;
                 if((this.typ == 0 || this.typ == 4 || this.typ == 5) && !waitforit) for(var i = 0; i < a.length; i++) if(a[i].col != this.col && a[i].pts && this.lif > 0) {
                     
                     // Check if bullet is even near this ship
@@ -449,15 +450,17 @@ function frag(pos, rot, col, typ, sub, del, spd) {
                         
                         // If part is hit, add damage
                         if(prt != -1) {
-                            this.lif = 0;
                             switch(this.typ) {
-                            case 0: a[i].p[prt].hlt -= Math.random() + 0.3; break;
-                            case 4: a[i].p[prt].hlt -= Math.random() + 0.5; break;
-                            case 5: a[i].p[prt].hlt -= Math.random() + 0.15; break;
+                            case 0: damage = Math.random() + 0.3; break;
+                            case 4: damage = Math.random() + 0.5; break;
+                            case 5: damage = Math.random() + 0.15; break;
                             }
+                            a[i].p[prt].hit += damage;
+                            a[i].p[prt].hlt -= damage;
+                            if(a[i].p[prt].hlt > 0) this.lif = 0; // Unless part is destroyed the bullet ends here
                             
-                            // Create explosion
-                            for(var u = 0; u < 3; u++) b.push(new frag(
+                            // Create explosion unless part is shield
+                            if(a[i].p[prt].part != "shield2" && a[i].p[prt].part != "shield3" && a[i].p[prt].part != "shield4") for(var u = 0; u < 3; u++) b.push(new frag(
                                 {x: this.pos.x, y: this.pos.y},
                                 Math.random() * 6.3,
                                 this.col,
@@ -723,8 +726,17 @@ function ship(pos, rot, typ, col) {
                 pos.y + Math.sin(rot) * this.p[i].x + Math.cos(rot) * this.p[i].y
             );
             c.rotate(rot);
-            if(this.p[i].hlt < 0.2) part.draw(part.id(this.p[i].part + "broken"));
-            else part.draw(part.id(this.p[i].part));
+            
+            // Draw shields only when hit
+            if(this.p[i].part == "shield2" || this.p[i].part == "shield3" || this.p[i].part == "shield4") {
+                if(this.p[i].hit > 0 && Math.random() < this.p[i].hit) part.draw(part.id(this.p[i].part)); // Shield flicker effect
+            } else {
+                if(this.p[i].hlt < 0.2) part.draw(part.id(this.p[i].part + "broken"));
+                else part.draw(part.id(this.p[i].part));
+            }
+            if(this.p[i].hit > 0) this.p[i].hit -= 0.3 * spd;
+            
+            // Since we're looping through parts anyways let's recalculate the weight and thrust of the ship too
             switch(this.p[i].part) {
             case "hull1": this.wgt += 0.8; break;
             case "hull2": this.wgt += 0.7; break;
