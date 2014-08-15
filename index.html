@@ -877,7 +877,7 @@ function ship(pos, rot, typ, col) {
             case "origin/300i_hull_rear": this.wgt += 0.5; break;
             case "origin/300i_thruster":
                 this.wgt += 0.5;
-                if(this.p[i].hlt > 0.2) this.acc += 2.5;
+                if(this.p[i].hlt > 0.2) this.acc += 3.0;
                 if(this.p[i].hlt > 0.2) if(this.brn && Math.random() < 0.3 * spd) {
                     b.push(new frag(
                         {
@@ -1054,8 +1054,39 @@ function ship(pos, rot, typ, col) {
         }
     }
     
+    // Calculate relative target details
+    this.calculateTarget = function(t_pos) {
+        var r = { // Result data
+            'position': t_pos,
+            'relative_position': false,
+            'distance': false,
+            'normal': false,
+            'dot': false,
+            'dot2': false
+        };
+            
+        // Get targets position relative to self
+        r.relative_position = { x: t_pos.x - this.pos.x, y: t_pos.y - this.pos.y };
+        
+        // Get distance and normal to target
+        r.distance = Math.sqrt(r.relative_position.x * r.relative_position.x + r.relative_position.y * r.relative_position.y);
+        
+        // Calculate normal towards target
+        if(r.distance) r.normal = {x: r.relative_position.x / r.distance, y: r.relative_position.y / r.distance};
+        else r.normal = {x: 1, y: 0};
+        
+        // Get extruded dot value to target
+        r.dot = this.nrm.x * -r.normal.y + this.nrm.y * r.normal.x;
+        
+        // Get normal dot value to target
+        r.dot2 = this.nrm.x * r.normal.x + this.nrm.y * r.normal.y;
+        
+        // Done collecting data
+        return r;
+    }
+    
     // Perform AI tasks
-    this.thinkShip = function(followed) {
+    this.thinkShip = function(followed, self_i) {
         if(!this.sys || waitforit) {
             this.brn = 0;
             this.fir = 0;
@@ -1289,7 +1320,7 @@ function loop() {
         c.save();
         a[i].moveShip();
         a[i].drawShip();
-        a[i].thinkShip(i == camid);
+        a[i].thinkShip(i == camid, i);
         c.restore();
         if(a[i].sys && a[i].gns && a[i].acc) teams[a[i].col]++;
         
