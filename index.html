@@ -549,6 +549,8 @@ function ship(pos, rot, typ, col) {
     this.var2 = 0; // When to start firing
     this.var3 = 0; // When to start evading
     this.respawn = 0; // Respawn timer
+    this.list = new Array(); // List of nearest ships
+    this.current = 0; // Current id for looping through units
     this.p = new Array(); // List of parts
     
     // Function for creating a new ship
@@ -1075,11 +1077,11 @@ function ship(pos, rot, typ, col) {
         if(r.distance) r.normal = {x: r.relative_position.x / r.distance, y: r.relative_position.y / r.distance};
         else r.normal = {x: 1, y: 0};
         
-        // Get extruded dot value to target
-        r.dot = this.nrm.x * -r.normal.y + this.nrm.y * r.normal.x;
-        
         // Get normal dot value to target
-        r.dot2 = this.nrm.x * r.normal.x + this.nrm.y * r.normal.y;
+        r.dot = this.nrm.x * r.normal.x + this.nrm.y * r.normal.y;
+        
+        // Get extruded dot value to target
+        r.dotx = this.nrm.x * -r.normal.y + this.nrm.y * r.normal.x;
         
         // Done collecting data
         return r;
@@ -1087,11 +1089,77 @@ function ship(pos, rot, typ, col) {
     
     // Perform AI tasks
     this.thinkShip = function(followed, self_i) {
+        
+        // Dead
         if(!this.sys || waitforit) {
             this.brn = 0;
             this.fir = 0;
             this.trn = 0;
             return;
+        }
+        
+        // Remove furthest away from list of close units unless list is not full
+        // Also remove ships behind you
+        this.current++;
+        if(this.current >= a.length) this.current = 0;
+        var furthest = {
+            'distance': 0,
+            'list_id': 0,
+            'has_current': false
+        }
+        var closest = false;
+        for(var i = 0; i < this.list.length; i++) if(a[this.list[i].id].sys) {
+            this.list[i].data = this.calculateTarget(a[this.list[i].id].pos);
+            if(this.list[i].data.distance > furthest.distance) {
+                furthest.distance = this.list[i].data.distance;
+                furthest.list_id = i;
+            }
+            if(this.list[i].id == this.current) furthest.has_current = true;
+            if(closest == false || closest.distance > this.list[i].data.distance) closest = this.list[i].data;
+            
+            // Draw debug
+            if(followed) {
+                if(this.list[i].remove_me) console.log("To remove: " + this.list[i].id);
+                if(this.list[i].data.dot < 0) c.strokeStyle = "rgb(255,0,0)";
+                else c.strokeStyle = "rgb(0,0,255)";
+                c.beginPath();
+                c.moveTo(this.pos.x, this.pos.y);
+                c.lineTo(this.list[i].data.position.x, this.list[i].data.position.y);
+                c.stroke();
+            }
+            
+            // Remove ships behind you
+            if(this.list[i].data.dot < 0 && this.list[i].data.distance > 200) {
+                this.list.splice(i, 1);
+                i--;
+            }
+        } else {
+            this.list.splice(i, 1);
+            i--;
+        }
+        if(this.list.length > 4) this.list.splice(furthest.list_id, 1);
+        
+        // Add next unit to list
+        if(this.current != self_i && !furthest.has_current) this.list.push({
+            'id': this.current,
+            'data': this.calculateTarget(a[this.current].pos)
+        });
+        
+        // Avoid collision
+        var lock_thrusters = false;
+        if(closest && closest.distance < 300) {
+            if(closest.dotx < 0) this.trn = -1.0;
+            else this.trn = 1.0;
+            if(closest.dot < 0) {
+                this.trn *= closest.dot;
+                this.brn = 1;
+            } else this.brn = 0;
+            lock_thrusters = true;
+            
+            // Draw debug
+            if(followed) {
+                c.strokeRect(this.pos.x - 300, this.pos.y - 300, 600, 600);
+            }
         }
         
         // Don't follow a disabled target
@@ -1166,17 +1234,21 @@ function ship(pos, rot, typ, col) {
                 
                 // If target is to the right, turn right, and vice versa
                 //  * Don't turn with full force if target is already in front of ship and still turning towards it (reduces swaying)
-                if(dot2 > 0.0) {
-                    if(dot > 0.0) this.trn = -dot;
-                    else this.trn = -dot;
-                } else {
-                    if(dot > 0.0) this.trn = -1.0;
-                    else this.trn = 1.0;
+                if(!lock_thrusters) {
+                    if(dot2 > 0.0) {
+                        if(dot > 0.0) this.trn = -dot;
+                        else this.trn = -dot;
+                    } else {
+                        if(dot > 0.0) this.trn = -1.0;
+                        else this.trn = 1.0;
+                    }
                 }
                 
                 // Accelerate if target is in front of ship
-                if(dot2 > 0.7) this.brn = 1;
-                else this.brn = 0;
+                if(!lock_thrusters) {
+                    if(dot2 > 0.7) this.brn = 1;
+                    else this.brn = 0;
+                }
                 
                 // Shoot target if within range
                 if(dis < 900 + this.var2 * 500 && dot2 > 0.9) this.fir = 1;
@@ -1196,19 +1268,21 @@ function ship(pos, rot, typ, col) {
                 this.fir = 0; // No firing because the game would be too difficult
                 
                 // If target is to the right, turn right, and vice versa
-                if(dot2 > 0.0) {
-                    if(dot > 0.0) this.trn = 1.0;
-                    else this.trn = -1.0;
-                } else {
+                if(!lock_thrusters) {
+                    if(dot2 > 0.0) {
+                        if(dot > 0.0) this.trn = 1.0;
+                        else this.trn = -1.0;
+                    } else {
+                        
+                        // Don't turn with full force if target is already behind the ship (reduces swaying)
+                        if(dot > 0.0) this.trn = dot;
+                        else this.trn = dot;
+                    }
                     
-                    // Don't turn with full force if target is already behind the ship (reduces swaying)
-                    if(dot > 0.0) this.trn = dot;
-                    else this.trn = dot;
+                    // Accelerate if target is behind the ship
+                    if(dot < 0.5) this.brn = 1;
+                    else this.brn = 0;
                 }
-                
-                // Accelerate if target is behind the ship
-                if(dot < 0.5) this.brn = 1;
-                else this.brn = 0;
             }
         
         // Find new target
