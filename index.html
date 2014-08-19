@@ -980,6 +980,95 @@ function ship(pos, rot, typ, col) {
             this.rot += this.del * spd;
             this.nrm = {x: Math.cos(this.rot), y: Math.sin(this.rot)};
             
+            // Collision test
+            var ctest = {};
+            for(var i = 0; i < this_i; i++) if(Math.max(Math.abs(this.pos.x - a[i].pos.x), Math.abs(this.pos.y - a[i].pos.y)) < 300) {
+                for(var p1 = 0; p1 < this.p.length; p1++) if(this.p[p1].hlt > 0) {
+                    
+                    // This parts absolute position
+                    ctest.p1pos = {                                          
+                        x: this.pos.x + this.nrm.x * this.p[p1].x - this.nrm.y * this.p[p1].y,
+                        y: this.pos.y + this.nrm.y * this.p[p1].x + this.nrm.x * this.p[p1].y
+                    }
+                    for(var p2 = 0; p2 < a[i].p.length; p2++) if(a[i].p[p2].hlt > 0) {
+                        
+                        // This parts absolute position
+                        ctest.p2pos = {
+                            x: a[i].pos.x + a[i].nrm.x * a[i].p[p2].x - a[i].nrm.y * a[i].p[p2].y,
+                            y: a[i].pos.y + a[i].nrm.y * a[i].p[p2].x + a[i].nrm.x * a[i].p[p2].y
+                        }
+                        
+                        // Get distance between parts
+                        ctest.relative = {
+                            x: ctest.p2pos.x - ctest.p1pos.x,
+                            y: ctest.p2pos.y - ctest.p1pos.y
+                        }
+                        ctest.distance = Math.sqrt(ctest.relative.x * ctest.relative.x + ctest.relative.y * ctest.relative.y);
+                        
+                        // Do they touch?
+                        ctest.size1 = (p[part.id(this.p[p1].part)].width + p[part.id(this.p[p1].part)].height) / 6.0;
+                        ctest.size2 = (p[part.id(a[i].p[p2].part)].width + p[part.id(a[i].p[p2].part)].height) / 6.0;
+
+//                         // Debug
+//                         if(this_i == camid) {
+//                             c.strokeStyle = "rgb(0,0,255)";
+//                             c.strokeRect(ctest.p1pos.x - ctest.size1 + 200, ctest.p1pos.y - ctest.size1 + 200, ctest.size1 * 2.0, ctest.size1 * 2.0);
+//                             c.strokeRect(ctest.p2pos.x - ctest.size2 + 200, ctest.p2pos.y - ctest.size2 + 200, ctest.size2 * 2.0, ctest.size2 * 2.0);
+//                         }
+                        if(ctest.distance < ctest.size1 + ctest.size2) {
+
+//                             // Debug
+//                             if(this_i == camid) {
+//                                 c.fillStyle = "rgb(255,0,0)";
+//                                 c.fillRect(ctest.p1pos.x - ctest.size1 + 200, ctest.p1pos.y - ctest.size1 + 200, ctest.size1 * 2.0, ctest.size1 * 2.0);
+//                                 c.fillRect(ctest.p2pos.x - ctest.size2 + 200, ctest.p2pos.y - ctest.size2 + 200, ctest.size2 * 2.0, ctest.size2 * 2.0);
+//                             }
+                            
+                            // Push ships away from each other so parts don't touch any more
+                            ctest.normal = {
+                                x: ctest.relative.x / ctest.distance,
+                                y: ctest.relative.y / ctest.distance
+                            }
+                            this.pos.x -= ctest.normal.x * (ctest.size1 + ctest.size2 - ctest.distance) * 0.5;
+                            this.pos.y -= ctest.normal.y * (ctest.size1 + ctest.size2 - ctest.distance) * 0.5;
+                            a[i].pos.x += ctest.normal.x * (ctest.size1 + ctest.size2 - ctest.distance) * 0.5;
+                            a[i].pos.y += ctest.normal.y * (ctest.size1 + ctest.size2 - ctest.distance) * 0.5;
+                            
+                            // Spin and bounce ships according to where parts hit and relative velocities
+                            ctest.speed = ctest.normal.x * this.spd.x + ctest.normal.y * this.spd.y;
+                            ctest.speed -= ctest.normal.x * a[i].spd.x + ctest.normal.y * a[i].spd.y;
+                            if(ctest.speed > 0) {
+                                this.spd.x -= ctest.normal.x * ctest.speed;
+                                this.spd.y -= ctest.normal.y * ctest.speed;
+                                a[i].spd.x += ctest.normal.x * ctest.speed;
+                                a[i].spd.y += ctest.normal.y * ctest.speed;
+                                
+                                // Damage parts that hit each other
+                                ctest.damage = Math.random() * ctest.speed * 0.2;
+                                this.p[p1].hit += ctest.damage;
+                                this.p[p1].hlt -= ctest.damage;
+                                a[i].p[p2].hit += ctest.damage;
+                                a[i].p[p2].hlt -= ctest.damage;
+                                console.log(ctest.damage);
+                                
+                                // Create explosion unless part is shield
+                                if(this.p[p1].part != "shield2" && this.p[p1].part != "shield3" && this.p[p1].part != "shield4" && a[i].p[p2].part != "shield2" && a[i].p[p2].part != "shield3" && a[i].p[p2].part != "shield4") {
+                                    for(var u = 0; u < 4 + ctest.damage; u++) b.push(new frag(
+                                        {x: (ctest.p1pos.x + ctest.p2pos.x) / 2.0, y: (ctest.p1pos.y + ctest.p2pos.y) / 2.0},
+                                        Math.random() * 6.3,
+                                        this.own,
+                                        1
+                                    ));
+                                }
+                            }
+                            
+                            // No other hit tests thank you
+                            break;
+                        }
+                    }
+                }
+            }
+            
             // Acceleration
             if(this.brn && this.acc > 0) {
                 this.spd.x += this.nrm.x * (this.acc / this.wgt) * 0.8;
@@ -1152,13 +1241,16 @@ function ship(pos, rot, typ, col) {
         
         // Avoid collision
         var lock_thrusters = false;
+//         if(false) {
         if(closest && closest.distance < 300) {
-            if(closest.dotx < 0) this.trn = -1.0;
-            else this.trn = 1.0;
             if(closest.dot < 0) {
-                this.trn *= closest.dot;
                 this.brn = 1;
-            } else this.brn = 0;
+                this.trn = 0;
+            } else {
+                this.brn = 0;
+                if(closest.dotx < 0) this.trn = -1.0;
+                else this.trn = 1.0;
+            }
             lock_thrusters = true;
             
 //             // Draw debug
