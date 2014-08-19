@@ -1037,7 +1037,7 @@ function ship(pos, rot, typ, col) {
                             // Spin and bounce ships according to where parts hit and relative velocities
                             ctest.speed = ctest.normal.x * this.spd.x + ctest.normal.y * this.spd.y;
                             ctest.speed -= ctest.normal.x * a[i].spd.x + ctest.normal.y * a[i].spd.y;
-                            if(ctest.speed > 0) {
+                            if(ctest.speed > 5.0) {
                                 this.spd.x -= ctest.normal.x * ctest.speed;
                                 this.spd.y -= ctest.normal.y * ctest.speed;
                                 a[i].spd.x += ctest.normal.x * ctest.speed;
@@ -1049,11 +1049,11 @@ function ship(pos, rot, typ, col) {
                                 this.p[p1].hlt -= ctest.damage;
                                 a[i].p[p2].hit += ctest.damage;
                                 a[i].p[p2].hlt -= ctest.damage;
-                                console.log(ctest.damage);
+//                                 console.log(ctest.damage + " ("+ctest.speed+")");
                                 
                                 // Create explosion unless part is shield
                                 if(this.p[p1].part != "shield2" && this.p[p1].part != "shield3" && this.p[p1].part != "shield4" && a[i].p[p2].part != "shield2" && a[i].p[p2].part != "shield3" && a[i].p[p2].part != "shield4") {
-                                    for(var u = 0; u < 4 + ctest.damage; u++) b.push(new frag(
+                                    for(var u = 0; u < ctest.speed * 0.1 + 1 && u < 7; u++) b.push(new frag(
                                         {x: (ctest.p1pos.x + ctest.p2pos.x) / 2.0, y: (ctest.p1pos.y + ctest.p2pos.y) / 2.0},
                                         Math.random() * 6.3,
                                         this.own,
