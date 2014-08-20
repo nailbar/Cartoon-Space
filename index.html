@@ -558,6 +558,7 @@ function ship(pos, rot, typ, col) {
     this.list = new Array(); // List of nearest ships
     this.current = 0; // Current id for looping through units
     this.aitimer = 0; // Timer for AI to change its mind
+    this.aimoral = 0; // Berserk timer :-)
     this.p = new Array(); // List of parts
     
     // Function for creating a new ship
@@ -1359,8 +1360,16 @@ function ship(pos, rot, typ, col) {
             // Controlled ship always follows target
             if(followed && hascontrol) this.stt = 0;
             
+            // Berserk mode
+            if(this.aimoral < 90 && this.gns) {
+                lock_thrusters = false;
+                dont_shoot = false;
+                this.stt = 0;
+            }
+            
             // Follow mode
             if(this.stt == 0) {
+                if(this.aimoral < 400) this.aimoral += spd;
                 
                 // If target is to the right, turn right, and vice versa
                 //  * Don't turn with full force if target is already in front of ship and still turning towards it (reduces swaying)
@@ -1395,6 +1404,8 @@ function ship(pos, rot, typ, col) {
             
             // Evade target if too close
             } else if(this.stt == 1) {
+                this.aimoral -= spd;
+                if(this.aimoral < 100) this.aimoral = 0;
                 this.fir = 0; // No firing because the game would be too difficult
                 
                 // If target is to the right, turn right, and vice versa
@@ -1571,9 +1582,11 @@ function loop() {
         if(hud.shields_hit) c.fillStyle = "#9ef";
         else c.fillStyle = "#08f";
         c.fillRect(10, 10, hud.shields * 15.0, 8);
-        c.fillStyle = "#3c0";
-        c.fillRect(10, 25, hud.weapons * 5.0, 8);
     }
+    c.fillStyle = "#3c0";
+    c.fillRect(10, 25, hud.weapons * 5.0, 8);
+    c.fillStyle = "#aaa";
+    c.fillRect(10, 40, a[camid].aimoral * 1.0, 8);
     
     // Restart game
     var multi = 0;
