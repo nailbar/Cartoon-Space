@@ -1,5 +1,6 @@
 <html>
 <head>
+<script type='text/javascript' src='starfield.js'></script>
 <script type='text/javascript'>
 var canvas;
 var c;
@@ -13,6 +14,7 @@ var waitforit = 50;
 var players = 1;
 var camid = 0;
 var waitcam = 0;
+var sf = new starfield();
 
 // User input
 var hascontrol = 0;
@@ -1223,7 +1225,7 @@ function ship(pos, rot, typ, col) {
 //             }
             
             // Remove ships behind you
-            if(this.list[i].data.dot < 0 && this.list[i].data.distance > 100) {
+            if(this.list[i].data.dot < 0 && this.list[i].data.distance > 200) {
                 this.list.splice(i, 1);
                 i--;
             }
@@ -1242,7 +1244,7 @@ function ship(pos, rot, typ, col) {
         // Avoid collision
         var lock_thrusters = false;
 //         if(false) {
-        if(closest && closest.distance < 300) {
+        if(closest && closest.distance < 400) {
             if(closest.dot < 0) {
                 this.brn = 1;
                 this.trn = 0;
@@ -1323,8 +1325,8 @@ function ship(pos, rot, typ, col) {
             var dot2 = this.nrm.x * nrm.x + this.nrm.y * nrm.y;
             
             // Follow target or evade it
-            if(dis > 700 + this.var1 * 400) this.stt = 0;
-            else if(dis < 500 + this.var3 * 400) this.stt = 1;
+            if(dis > 700 + this.var1 * 600) this.stt = 0;
+            else if(dis < 500 + this.var3 * 600) this.stt = 1;
             
             // Always evade if no weapons
             if(!this.gns) this.stt = 1;
@@ -1410,6 +1412,7 @@ function init() {
     // Get canvas
     canvas = document.getElementById('canvas');
     c = canvas.getContext('2d');
+    sf.init(100);
     
     // Load images
     part.init();
@@ -1469,9 +1472,11 @@ function loop() {
     } else waitforit = 0;
 
     // Clear background
-    c.fillStyle = "rgb(240,240,250)";
+//     c.fillStyle = "rgb(240,240,250)";
+    c.fillStyle = "rgb(100,130,150)";
     c.strokeStyle = "rgb(150,0,0)";
     c.fillRect(0, 0, canvas.width, canvas.height);
+    sf.draw();
     
     // Camera follows a[camid].pos and scene is zoomed out to view both a[camid] and its target
     //  * camid selects a healthy ship
