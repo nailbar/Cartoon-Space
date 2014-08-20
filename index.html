@@ -555,6 +555,7 @@ function ship(pos, rot, typ, col) {
     this.var1 = 0; // When to start attacking
     this.var2 = 0; // When to start firing
     this.var3 = 0; // When to start evading
+    this.var4 = 0; // When to stop to avoid getting too close
     this.respawn = 0; // Respawn timer
     this.list = new Array(); // List of nearest ships
     this.current = 0; // Current id for looping through units
@@ -574,6 +575,7 @@ function ship(pos, rot, typ, col) {
         this.var1 = Math.random(); // When to start attacking
         this.var2 = Math.random(); // When to start firing
         this.var3 = Math.random(); // When to start evading
+        this.var4 = Math.random(); // When to stop to avoid getting too close
         this.p = new Array();
         switch(id) {
         case 0: // Hornet
@@ -1389,7 +1391,7 @@ function ship(pos, rot, typ, col) {
                 
                 // Accelerate if target is in front of ship
                 if(!lock_thrusters) {
-                    if(dot2 > 0.7 && dis > 900) this.brn = 1;
+                    if(dot2 > 0.7 && dis > 600 + this.var4 * 500) this.brn = 1;
                     else this.brn = 0;
                 }
                 
@@ -1590,6 +1592,9 @@ function loop() {
         if(hud.shields_hit) c.fillStyle = "#9ef";
         else c.fillStyle = "#08f";
         c.fillRect(10, 10, hud.shields * 15.0, 8);
+    } else if(Math.random() < 0.5) {
+        c.fillStyle = "#f00";
+        c.fillRect(10, 10, 8, 8);
     }
     c.fillStyle = "#3c0";
     c.fillRect(10, 25, hud.weapons * 5.0, 8);
