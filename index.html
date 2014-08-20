@@ -24,6 +24,10 @@ var iskeyboardcontrol = false;
 var isturning = 0;
 var ispaused = false;
 var trg = {x: 0, y: 0};
+var hud = {
+    'shields': 0,
+    'weapons': 0
+}
 
 var part = {
     'id': function(part_name) {
@@ -553,6 +557,7 @@ function ship(pos, rot, typ, col) {
     this.respawn = 0; // Respawn timer
     this.list = new Array(); // List of nearest ships
     this.current = 0; // Current id for looping through units
+    this.aitimer = 0; // Timer for AI to change its mind
     this.p = new Array(); // List of parts
     
     // Function for creating a new ship
@@ -713,7 +718,7 @@ function ship(pos, rot, typ, col) {
     }
     
     // Function for drawing this ship
-    this.drawShip = function(pos, rot) {
+    this.drawShip = function(pos, rot, followed) {
         var spd = (ispaused ? 0.1 : 1.0);
         if(!pos) pos = this.pos;
         if(!rot) rot = this.rot;
@@ -722,6 +727,10 @@ function ship(pos, rot, typ, col) {
         this.gns = 0; // Ship has weapons
         this.sys = 0; // This has system
         this.pts = 0; // Number of healthy parts
+        if(followed) {
+            hud.shields = 0;
+            hud.shields_hit = false;
+        }
         for(var i = 0; i < this.p.length; i++) if(this.p[i].hlt > 0.0) if(this.p[this.p[i].parent].hlt > 0.0) {
             this.pts++;
             c.save();
@@ -733,7 +742,11 @@ function ship(pos, rot, typ, col) {
             
             // Draw shields only when hit
             if(this.p[i].part == "shield2" || this.p[i].part == "shield3" || this.p[i].part == "shield4") {
-                if(this.p[i].hit > 0 && Math.random() < this.p[i].hit) part.draw(part.id(this.p[i].part)); // Shield flicker effect
+                if(followed) hud.shields = this.p[i].hlt; // Shield health to hud
+                if(this.p[i].hit > 0 && Math.random() < this.p[i].hit) {
+                    part.draw(part.id(this.p[i].part)); // Shield flicker effect
+                    if(followed) hud.shields_hit = true; // Shields hud effect
+                }
             } else {
                 if(this.p[i].hlt < 0.2) part.draw(part.id(this.p[i].part + "broken"));
                 else part.draw(part.id(this.p[i].part));
@@ -904,9 +917,9 @@ function ship(pos, rot, typ, col) {
             case "vanduul/scythe_blade_arm_left": this.wgt += 0.5; break;
             
             // Shields
-            case "shield2": this.wgt += 0.01; if(this.p[i].hlt < 6.0) this.p[i].hlt += spd * 0.01; break;
-            case "shield3": this.wgt += 0.01; if(this.p[i].hlt < 9.0) this.p[i].hlt += spd * 0.01; break;
-            case "shield4": this.wgt += 0.01; if(this.p[i].hlt < 7.0) this.p[i].hlt += spd * 0.01; break;
+            case "shield2": this.wgt += 0.01; if(this.p[i].hlt < 4.0) this.p[i].hlt += spd * 0.01; break;
+            case "shield3": this.wgt += 0.01; if(this.p[i].hlt < 5.0) this.p[i].hlt += spd * 0.01; break;
+            case "shield4": this.wgt += 0.01; if(this.p[i].hlt < 6.0) this.p[i].hlt += spd * 0.01; break;
             }
             c.restore();
         } else {
@@ -973,6 +986,7 @@ function ship(pos, rot, typ, col) {
     
     // Move this ship
     this.moveShip = function(this_i) {
+        if(this_i == camid) hud.weapons = 0;
         var spd = (ispaused ? 0.1 : 1.0);
         if(this.wgt) {
             
@@ -1092,6 +1106,7 @@ function ship(pos, rot, typ, col) {
             
             // Shooting
             if(this.gns) {
+                if(this_i == camid) hud.weapons = this.lod;
                 if(this.lod > 0) this.lod -= spd;
                 if(this.fir && this.lod <= 0) {
                     this.lod = 15; // Load time 15 frames
@@ -1180,6 +1195,8 @@ function ship(pos, rot, typ, col) {
     
     // Perform AI tasks
     this.thinkShip = function(followed, self_i) {
+        var spd = (ispaused ? 0.1 : 1.0);
+        if(this.aitimer > 0) this.aitimer -= spd;
         
         // Dead
         if(!this.sys || waitforit) {
@@ -1304,11 +1321,15 @@ function ship(pos, rot, typ, col) {
             else var nrm = {x: 1, y: 0};
             
             // Draw a target indicator
-            c.beginPath();
-            c.moveTo(this.pos.x + nrm.x * 70 ,this.pos.y + nrm.y * 70);
-            c.lineTo(this.pos.x + nrm.x * 90 ,this.pos.y + nrm.y * 90);
-            c.closePath();
-            c.stroke();
+            if(followed) {
+                c.fillStyle = "#f20";
+                c.beginPath();
+                c.moveTo(this.pos.x + nrm.x * 170 - nrm.y * 5, this.pos.y + nrm.y * 170 + nrm.x * 5);
+                c.lineTo(this.pos.x + nrm.x * 170 - nrm.y * -5, this.pos.y + nrm.y * 170 + nrm.x * -5);
+                c.lineTo(this.pos.x + nrm.x * 200, this.pos.y + nrm.y * 200);
+                c.closePath();
+                c.fill();
+            }
             
             // Get human input
             if(followed && hascontrol && !iskeyboardcontrol) {
@@ -1325,8 +1346,11 @@ function ship(pos, rot, typ, col) {
             var dot2 = this.nrm.x * nrm.x + this.nrm.y * nrm.y;
             
             // Follow target or evade it
-            if(dis > 700 + this.var1 * 600) this.stt = 0;
-            else if(dis < 500 + this.var3 * 600) this.stt = 1;
+            if(dis > 700 + this.var1 * 600 && this.aitimer <= 0) this.stt = 0;
+            else if(dis < 500 + this.var3 * 600) {
+                this.stt = 1;
+                this.aitimer = Math.random() * 50.0;
+            }
             
             // Always evade if no weapons
             if(!this.gns) this.stt = 1;
@@ -1501,7 +1525,7 @@ function loop() {
     for(var i = 0; i < a.length; i++) {
         c.save();
         a[i].moveShip(i);
-        a[i].drawShip();
+        a[i].drawShip(false, false, i == camid);
         a[i].thinkShip(i == camid, i);
         c.restore();
         if(a[i].sys && a[i].gns && a[i].acc) teams[a[i].col]++;
@@ -1540,6 +1564,15 @@ function loop() {
     // Timer for human control
     if(hascontrol > 0) hascontrol--;
     else hascontrol = 0;
+    
+    // Draw hud
+    if(hud.shields) {
+        if(hud.shields_hit) c.fillStyle = "#9ef";
+        else c.fillStyle = "#08f";
+        c.fillRect(10, 10, hud.shields * 15.0, 8);
+        c.fillStyle = "#3c0";
+        c.fillRect(10, 25, hud.weapons * 5.0, 8);
+    }
     
     // Restart game
     var multi = 0;
