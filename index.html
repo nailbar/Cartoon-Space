@@ -1262,11 +1262,12 @@ function ship(pos, rot, typ, col) {
         var lock_thrusters = false;
 //         if(false) {
         if(closest && closest.distance < 400) {
-            if(closest.dot < 0) {
+            if(closest.dot < -0.1) {
                 this.brn = 1;
                 this.trn = 0;
             } else {
-                this.brn = 0;
+                if(closest.dot < 0.5) this.brn = 1;
+                else this.brn = 0;
                 if(closest.dotx < 0) this.trn = -1.0;
                 else this.trn = 1.0;
             }
@@ -1375,7 +1376,7 @@ function ship(pos, rot, typ, col) {
                 
                 // Accelerate if target is in front of ship
                 if(!lock_thrusters) {
-                    if(dot2 > 0.7) this.brn = 1;
+                    if(dot2 > 0.7 && dis > 900) this.brn = 1;
                     else this.brn = 0;
                 }
                 
