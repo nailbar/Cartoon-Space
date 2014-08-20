@@ -28,6 +28,7 @@ var hud = {
     'shields': 0,
     'weapons': 0
 }
+var reticle = false;
 
 var part = {
     'id': function(part_name) {
@@ -1227,7 +1228,7 @@ function ship(pos, rot, typ, col) {
             if(this.list[i].id == this.current) furthest.has_current = true;
             if(closest == false || closest.distance > this.list[i].data.distance) closest = this.list[i].data;
             if(a[this.list[i].id].col == this.col) {
-                if(this.list[i].data.dot > 0 && this.list[i].data.distance < 200) dont_shoot = true;
+                if(this.list[i].data.dot > 0.2 && this.list[i].data.distance < 200) dont_shoot = true;
                 else if(this.list[i].data.dot > 0.9 && this.list[i].data.distance < 2000) dont_shoot = true;
             }
             
@@ -1331,6 +1332,9 @@ function ship(pos, rot, typ, col) {
                 c.lineTo(this.pos.x + nrm.x * 200, this.pos.y + nrm.y * 200);
                 c.closePath();
                 c.fill();
+                
+//                 // Reticle (not ready yet, need to auto-adjust ships center first)
+//                 c.drawImage(reticle, a[this.trg].pos.x - reticle.width * 0.5, a[this.trg].pos.y - reticle.height * 0.5);
             }
             
             // Get human input
@@ -1452,6 +1456,8 @@ function init() {
     
     // Load images
     part.init();
+    reticle = new Image();
+    reticle.src = "reticle.png";
     doneload();
 }
 
@@ -1501,7 +1507,8 @@ function loop() {
             }
             b = new Array();
             camid = Math.floor(Math.random() * 3);
-            cam = a[camid].pos;
+            cam.x += (a[camid].pos.x - cam.x) * (0.1 * spd);
+            cam.y += (a[camid].pos.y - cam.y) * (0.1 * spd);
             zoomtrg = 1.0;
             waitcam = 0;
         }
@@ -1521,7 +1528,8 @@ function loop() {
         waitcam = 50; // Wait 50 framse until view switch
         hascontrol = 0;
     } else if(waitcam < 1) {
-        cam = a[camid].pos;
+        cam.x += (a[camid].pos.x + a[camid].spd.x * 40.0 - cam.x) * (0.1 * spd);
+        cam.y += (a[camid].pos.y + a[camid].spd.y * 40.0 - cam.y) * (0.1 * spd);
         if(!waitforit) {
             zoomtrg = 1.0 + Math.sqrt((a[a[camid].trg].pos.x - a[camid].pos.x) * (a[a[camid].trg].pos.x - a[camid].pos.x) + (a[a[camid].trg].pos.y - a[camid].pos.y) * (a[a[camid].trg].pos.y - a[camid].pos.y)) * 0.0025;
             if(zoomtrg > 4.0) zoomtrg = 4.0;
@@ -1585,8 +1593,10 @@ function loop() {
     }
     c.fillStyle = "#3c0";
     c.fillRect(10, 25, hud.weapons * 5.0, 8);
-    c.fillStyle = "#aaa";
-    c.fillRect(10, 40, a[camid].aimoral * 1.0, 8);
+
+// Generic level indicator for debugging
+//     c.fillStyle = "#aaa";
+//     c.fillRect(10, 40, a[camid].aimoral * 1.0, 8);
     
     // Restart game
     var multi = 0;
@@ -1637,7 +1647,14 @@ function startkeyinput(e) {
     }
 }
 function stopkeyinput(e) {
+// console.log(e.keyCode);
     switch(e.keyCode) {
+    case 84: // T for next target
+        a[camid].trg++;
+        if(a[camid].trg == camid) a[camid].trg++;
+        if(a[camid].trg >= a.length) a[camid].trg = 0;
+        break;
+    case 78: camid++; if(camid >= a.length) camid = 0; break; // N for next ship
     case 80: ispaused = (ispaused ? false : true); break; // P for pause, which is actually just slow motion toggle
     case 81: isshooting = false; break;
     case 73: isaccelerating = false; break;
@@ -1650,6 +1667,6 @@ function stopkeyinput(e) {
 <body onload='init()' onmouseup='stopshooting(event)' style='margin: 0px;' onkeydown='startkeyinput(event)' onkeyup='stopkeyinput(event)'>
 <p><a href='http://robertsspaceindustries.com/'>Star Citizen Arena Commander</a> mod for Cartoon Space</p>
 <canvas id="canvas" width='1200' height='800' onmousedown='startshooting()' onmousemove='movetarget(event)'></canvas>
-<p id="asdf"></p><p id="debug">Accelerate: I, Turn left: J, Turn right: L, Fire: Q, Slow motion: P</p>
+<p id="asdf"></p><p id="debug">Accelerate: I, Turn left: J, Turn right: L, Fire: Q<br>Next target: T, Next ship: N, Slow motion: P</p>
 </body>
 </html>
