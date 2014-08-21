@@ -23,6 +23,7 @@ var isaccelerating = false;
 var iskeyboardcontrol = false;
 var isturning = 0;
 var ispaused = false;
+var ismissiling = 0;
 var trg = {x: 0, y: 0};
 var hud = {
     'shields': 0,
@@ -561,6 +562,8 @@ function ship(pos, rot, typ, col) {
     this.current = 0; // Current id for looping through units
     this.aitimer = 0; // Timer for AI to change its mind
     this.aimoral = 0; // Berserk timer :-)
+    this.missiles = 0; // Excactly what it says on the box
+    this.missile_lock = 0;
     this.p = new Array(); // List of parts
     
     // Function for creating a new ship
@@ -593,6 +596,7 @@ function ship(pos, rot, typ, col) {
             this.p.push(part.create("anvil/hornet_big_gun", 3.0, -7.0, 10));
             this.p.push(part.create("anvil/hornet_big_gun", 3.0, 7.0, 10));
             this.p.push(part.create("shield3", -13.0, 0.0, 6));
+            this.missiles = 6;
             break;
         case 1: // Scythe
             this.p.push(part.create("vanduul/scythe_small_gun", 42.0, -13.0, 9)); // 0
@@ -607,6 +611,7 @@ function ship(pos, rot, typ, col) {
             this.p.push(part.create("vanduul/scythe_cockpit", 25.0, -10.0, 8)); // 9
             this.p.push(part.create("vanduul/scythe_blade", 62.0, 60.0, 5)); // 10
             this.p.push(part.create("shield4", 50.0, 0.0, 8));
+            this.missiles = 6;
             break;
         case 2: // Aurora
             this.p.push(part.create("vanduul/scythe_small_gun", 50.0, -12.0, 10));
@@ -621,6 +626,7 @@ function ship(pos, rot, typ, col) {
             this.p.push(part.create("rsi/aurora_main_hull", 0.0, 0.0, 9)); // 9
             this.p.push(part.create("rsi/aurora_cockpit", 49.0, 0.0, 9)); // 10
             this.p.push(part.create("shield2", 20.0, 0.0, 9));
+            this.missiles = 4;
             break;
         case 3: // 300i
             this.p.push(part.create("vanduul/scythe_small_gun", 38.0, 0.0, 5));
@@ -634,6 +640,7 @@ function ship(pos, rot, typ, col) {
             this.p.push(part.create("origin/300i_cockpit", 13.0, 0.0, 5));
             this.p.push(part.create("origin/300i_wing_top", -63.0, 0.0, 7));
             this.p.push(part.create("shield3", -20.0, 0.0, 5));
+            this.missiles = 4;
             break;
         case 4: // Glaive
             this.p.push(part.create("vanduul/scythe_small_gun", 42.0, 3.0, 9));
@@ -649,6 +656,7 @@ function ship(pos, rot, typ, col) {
             this.p.push(part.create("vanduul/scythe_blade_left", 62.0, -60.0, 4));
             this.p.push(part.create("vanduul/scythe_blade", 62.0, 60.0, 5));
             this.p.push(part.create("shield4", 50.0, 0.0, 8));
+            this.missiles = 8;
             break;
 //         case 0: // Team 1 light fighter
 //             this.p.push(part.create("blaster1", 25.0, 0.0, 2));
@@ -1406,7 +1414,19 @@ function ship(pos, rot, typ, col) {
                         this.trn = isturning;
                         this.brn = isaccelerating;
                     }
+                    if(ismissiling && this.missiles) {
+                        if(this.missile_lock <= 0) this.missile_lock = 60.0;
+                    } else this.missile_lock = 0;
                 }
+                
+                // Missile lock handling
+                if(dot2 > 0.7 && this.missile_lock > 0 && this.missiles > 0) {
+                    this.missile_lock -= spd;
+                    if(this.missile_lock <= 0) {
+                        this.missiles--;
+                        if(followed) ismissiling = 0;
+                    }
+                } else this.missile_lock =0;
             
             // Evade target if too close
             } else if(this.stt == 1) {
@@ -1598,10 +1618,9 @@ function loop() {
     }
     c.fillStyle = "#3c0";
     c.fillRect(10, 25, hud.weapons * 5.0, 8);
-
-// Generic level indicator for debugging
-//     c.fillStyle = "#aaa";
-//     c.fillRect(10, 40, a[camid].aimoral * 1.0, 8);
+        c.fillStyle = "#c90";
+    if(a[camid].missile_lock > 0) c.fillRect(10, 40, a[camid].missile_lock * 5.0, 8);
+    for(var i = 0; i < a[camid].missiles; i++) c.fillRect(10 + i * 15, 55, 8, 8);
     
     // Restart game
     var multi = 0;
@@ -1649,6 +1668,10 @@ function startkeyinput(e) {
         iskeyboardcontrol = true;
         hascontrol = 500;
         break;
+    case 87:
+        iskeyboardcontrol = true;
+        hascontrol = 500;
+        break;
     }
 }
 function stopkeyinput(e) {
@@ -1665,6 +1688,7 @@ function stopkeyinput(e) {
     case 73: isaccelerating = false; break;
     case 74: isturning = 0; break;
     case 76: isturning = 0; break;
+    case 87: ismissiling = (ismissiling ? 0 : 1); break; // W for missile
     }
 }
 </script>
@@ -1672,6 +1696,6 @@ function stopkeyinput(e) {
 <body onload='init()' onmouseup='stopshooting(event)' style='margin: 0px;' onkeydown='startkeyinput(event)' onkeyup='stopkeyinput(event)'>
 <p><a href='http://robertsspaceindustries.com/'>Star Citizen Arena Commander</a> mod for Cartoon Space</p>
 <canvas id="canvas" width='1200' height='800' onmousedown='startshooting()' onmousemove='movetarget(event)'></canvas>
-<p id="asdf"></p><p id="debug">Accelerate: I, Turn left: J, Turn right: L, Fire: Q<br>Next target: T, Next ship: N, Slow motion: P</p>
+<p id="asdf"></p><p id="debug">Accelerate: I, Turn left: J, Turn right: L, Fire: Q<br>Fire missile: W, Next target: T, Next ship: N, Slow motion: P</p>
 </body>
 </html>
