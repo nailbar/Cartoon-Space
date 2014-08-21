@@ -453,67 +453,69 @@ function frag(pos, rot, own, typ, sub, del, spd) {
                     if(this.pos.x < a[i].pos.x + 50 && this.pos.x > a[i].pos.x - 50 && this.pos.y < a[i].pos.y + 50 && this.pos.y > a[i].pos.y - 50) {
                         
                         // Missiles explode here
-                        if(this.typ == 6) {
-                            this.lif = 0;
-                            for(var u = 0; u < 15; u++) b.push(new frag(
-                                { x: this.pos.x, y: this.pos.y },
-                                Math.random() * Math.PI * 2.0, -1, 7));
-                        }
-                        
-                        // Check what part of ship is hit
-                        pdis = 1000;
-                        prt = -1;
-                        for(var u = 0; u < a[i].p.length; u++) if(a[i].p[u].hlt > 0.0 && this.lif > 0) {
-                            ppos = {
-                                x: a[i].pos.x + a[i].nrm.x * a[i].p[u].x - a[i].nrm.y * a[i].p[u].y,
-                                y: a[i].pos.y + a[i].nrm.y * a[i].p[u].x + a[i].nrm.x * a[i].p[u].y
-                            };
-                            if(a[i].p[u].hlt < 0.2) partid = part.id(a[i].p[u].part + "broken");
-                            else partid = part.id(a[i].p[u].part);
-                            psiz = (p[partid].width + p[partid].height) / 4.0;
-                            pos = {x: this.pos.x - ppos.x, y: this.pos.y - ppos.y};
-                            dis = Math.sqrt(pos.x * pos.x + pos.y * pos.y) - psiz;
-                            if(dis < psiz && dis < pdis) {
-                                prt = u;
-                                pdis = dis;
-                                pcpos = {x: ppos.x, y: ppos.y};
-                            }
-                        }
-                        
-                        // If part is hit, add damage
-                        if(prt != -1) {
-                            switch(this.typ) {
-                            case 0: damage = Math.random() + 0.25; break;
-                            case 4: damage = Math.random() + 0.4; break;
-                            case 5: damage = Math.random() + 0.15; break;
-                            }
-                            a[i].p[prt].hit += damage;
-                            a[i].p[prt].hlt -= damage;
-                            if(a[i].p[prt].hlt > 0) this.lif = 0; // Unless part is destroyed the bullet ends here
+                        if(this.typ == 6) this.lif = 0;
+                        else {
                             
-                            // Create explosion unless part is shield
-                            if(a[i].p[prt].part != "shield2" && a[i].p[prt].part != "shield3" && a[i].p[prt].part != "shield4") for(var u = 0; u < 3; u++) b.push(new frag(
-                                {x: this.pos.x, y: this.pos.y},
-                                Math.random() * 6.3,
-                                this.own,
-                                1
-                            ));
+                            // Check what part of ship is hit
+                            pdis = 1000;
+                            prt = -1;
+                            for(var u = 0; u < a[i].p.length; u++) if(a[i].p[u].hlt > 0.0 && this.lif > 0) {
+                                ppos = {
+                                    x: a[i].pos.x + a[i].nrm.x * a[i].p[u].x - a[i].nrm.y * a[i].p[u].y,
+                                    y: a[i].pos.y + a[i].nrm.y * a[i].p[u].x + a[i].nrm.x * a[i].p[u].y
+                                };
+                                if(a[i].p[u].hlt < 0.2) partid = part.id(a[i].p[u].part + "broken");
+                                else partid = part.id(a[i].p[u].part);
+                                psiz = (p[partid].width + p[partid].height) / 4.0;
+                                pos = {x: this.pos.x - ppos.x, y: this.pos.y - ppos.y};
+                                dis = Math.sqrt(pos.x * pos.x + pos.y * pos.y) - psiz;
+                                if(dis < psiz && dis < pdis) {
+                                    prt = u;
+                                    pdis = dis;
+                                    pcpos = {x: ppos.x, y: ppos.y};
+                                }
+                            }
                             
-                            // Detatch broken part
-                            if(a[i].p[prt].hlt <= 0.0) {
-                                b.push(new frag(
-                                    {x: pcpos.x, y: pcpos.y},
-                                    a[i].rot,
+                            // If part is hit, add damage
+                            if(prt != -1) {
+                                switch(this.typ) {
+                                case 0: damage = Math.random() + 0.25; break;
+                                case 4: damage = Math.random() + 0.4; break;
+                                case 5: damage = Math.random() + 0.15; break;
+                                }
+                                a[i].p[prt].hit += damage;
+                                a[i].p[prt].hlt -= damage;
+                                if(a[i].p[prt].hlt > 0) this.lif = 0; // Unless part is destroyed the bullet ends here
+                                
+                                // Create explosion unless part is shield
+                                if(a[i].p[prt].part != "shield2" && a[i].p[prt].part != "shield3" && a[i].p[prt].part != "shield4") for(var u = 0; u < 3; u++) b.push(new frag(
+                                    {x: this.pos.x, y: this.pos.y},
+                                    Math.random() * 6.3,
                                     this.own,
-                                    3, a[i].p[prt].part,
-                                    a[i].del + Math.random() * 0.2 - 0.1,
-                                    {x: a[i].spd.x + Math.random() * 8.0 - 4.0, y: a[i].spd.y + Math.random() * 8.0 - 4.0}
+                                    1
                                 ));
-                                a[i].p[prt].hlt = 0;
+                                
+                                // Detatch broken part
+                                if(a[i].p[prt].hlt <= 0.0) {
+                                    b.push(new frag(
+                                        {x: pcpos.x, y: pcpos.y},
+                                        a[i].rot,
+                                        this.own,
+                                        3, a[i].p[prt].part,
+                                        a[i].del + Math.random() * 0.2 - 0.1,
+                                        {x: a[i].spd.x + Math.random() * 8.0 - 4.0, y: a[i].spd.y + Math.random() * 8.0 - 4.0}
+                                    ));
+                                    a[i].p[prt].hlt = 0;
+                                }
                             }
                         }
                     }
                 }
+                
+                // Missile always explodes at the end
+                if(this.lif < 2 && this.typ == 6) for(var u = 0; u < 15; u++) b.push(new frag(
+                    { x: this.pos.x, y: this.pos.y },
+                    Math.random() * Math.PI * 2.0, -1, 7));
             }
         }
     }
@@ -532,7 +534,7 @@ function frag(pos, rot, own, typ, sub, del, spd) {
         case 3: this.lif = 150 + Math.random() * 150.0; break; // Ship part
         case 4: this.lif = 90 + Math.random() * 20.0; break; // Big blast
         case 5: this.lif = 90 + Math.random() * 20.0; break; // Small blast
-        case 6: this.lif = 100.0; if(this.sub == "") this.sub = 0; break; // Missile
+        case 6: this.lif = 200.0; if(this.sub == "") this.sub = 0; break; // Missile
         case 7: // Missile explosion
             this.typ = Math.floor(Math.random() * 1.3);
             this.lif = 10 + Math.random() * 15.0;
