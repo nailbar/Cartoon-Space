@@ -427,8 +427,8 @@ function frag(pos, rot, own, typ, sub, del, spd) {
                         else this.del = 0.1;
                         this.spd.x += Math.cos(this.rot) * 2.0 * spd;
                         this.spd.y += Math.sin(this.rot) * 2.0 * spd;
-                        this.spd.x *= 1.0 - 0.01 * spd;
-                        this.spd.y *= 1.0 - 0.01 * spd;
+                        this.spd.x *= 1.0 - 0.02 * spd;
+                        this.spd.y *= 1.0 - 0.02 * spd;
                     } else this.lif = 0;
                 }
                 
@@ -532,7 +532,7 @@ function frag(pos, rot, own, typ, sub, del, spd) {
         case 3: this.lif = 150 + Math.random() * 150.0; break; // Ship part
         case 4: this.lif = 90 + Math.random() * 20.0; break; // Big blast
         case 5: this.lif = 90 + Math.random() * 20.0; break; // Small blast
-        case 6: this.lif = 100.0; break; // Missile
+        case 6: this.lif = 100.0; if(this.sub == "") this.sub = 0; break; // Missile
         case 7: // Missile explosion
             this.typ = Math.floor(Math.random() * 1.3);
             this.lif = 10 + Math.random() * 15.0;
@@ -1449,23 +1449,30 @@ function ship(pos, rot, typ, col) {
                         this.brn = isaccelerating;
                     }
                     if(ismissiling && this.missiles) {
-                        if(this.missile_lock <= 0) this.missile_lock = 60.0;
-                    } else this.missile_lock = 0;
-                }
+                        if(this.missile_lock <= 0) this.missile_lock = 50.0;
+                    } else {
+                        this.missile_lock = 0;
+                        ismissiling = false;
+                    }
+                
+                // AI descicion on missiles
+                } else if(dis > 1000 + this.var2 * 500 && dis < 1050 + this.var2 * 500 && this.missile_lock <= 0) this.missile_lock = 50.0;
                 
                 // Missile lock handling
-                if(dot2 > 0.7 && this.missile_lock > 0 && this.missiles > 0) {
+                if(dot2 > 0.7 && this.missile_lock > 0 && this.missiles > 0 && dis < 2000) {
                     this.missile_lock -= spd;
                     if(this.missile_lock <= 0) {
                         this.missiles--;
-//                         pos, rot, own, typ, sub, del, spd
                         b.push(new frag(
                             { x: this.pos.x, y: this.pos.y },
                             this.rot, self_i, 6, this.trg
                         ));
                         if(followed) ismissiling = 0;
                     }
-                } else this.missile_lock =0;
+                } else {
+                    this.missile_lock =0;
+                    if(followed) ismissiling = 0;
+                }
             
             // Evade target if too close
             } else if(this.stt == 1) {
