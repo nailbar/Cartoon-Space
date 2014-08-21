@@ -538,7 +538,7 @@ function frag(pos, rot, own, typ, sub, del, spd) {
         case 7: // Missile explosion
             this.typ = Math.floor(Math.random() * 1.3);
             this.lif = 10 + Math.random() * 15.0;
-            spd = { x: Math.cos(this.rot) * 10, y: Math.sin(this.rot) * 10 };
+            spd = { x: Math.cos(this.rot) * 10 * Math.random(), y: Math.sin(this.rot) * 10 * Math.random() };
             break;
         }
         if(spd) this.spd = spd;
@@ -1478,6 +1478,7 @@ function ship(pos, rot, typ, col) {
             
             // Evade target if too close
             } else if(this.stt == 1) {
+                this.missile_lock =0;
                 this.aimoral -= spd;
                 if(this.aimoral < 100) this.aimoral = 0;
                 this.fir = 0; // No firing because the game would be too difficult
@@ -1577,8 +1578,8 @@ function loop() {
             }
             b = new Array();
             camid = Math.floor(Math.random() * 3);
-            cam.x += (a[camid].pos.x - cam.x) * (0.1 * spd);
-            cam.y += (a[camid].pos.y - cam.y) * (0.1 * spd);
+            cam.x += (a[camid].pos.x - cam.x) * 0.1;
+            cam.y += (a[camid].pos.y - cam.y) * 0.1;
             zoomtrg = 1.0;
             waitcam = 0;
         }
@@ -1598,8 +1599,8 @@ function loop() {
         waitcam = 50; // Wait 50 framse until view switch
         hascontrol = 0;
     } else if(waitcam < 1) {
-        cam.x += (a[camid].pos.x + a[camid].spd.x * 40.0 - cam.x) * (0.1 * spd);
-        cam.y += (a[camid].pos.y + a[camid].spd.y * 40.0 - cam.y) * (0.1 * spd);
+        cam.x += (a[camid].pos.x + a[camid].spd.x * 40.0 * spd - cam.x) * 0.1;
+        cam.y += (a[camid].pos.y + a[camid].spd.y * 40.0 * spd - cam.y) * 0.1;
         if(!waitforit) {
             zoomtrg = 1.0 + Math.sqrt((a[a[camid].trg].pos.x - a[camid].pos.x) * (a[a[camid].trg].pos.x - a[camid].pos.x) + (a[a[camid].trg].pos.y - a[camid].pos.y) * (a[a[camid].trg].pos.y - a[camid].pos.y)) * 0.0025;
             if(zoomtrg > 4.0) zoomtrg = 4.0;
