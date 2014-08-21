@@ -404,6 +404,7 @@ function frag(pos, rot, own, typ, sub, del, spd) {
             case 3: part.draw(part.id(this.sub + "broken")); break; // Part
             case 4: part.draw(47); break; // Big blast
             case 5: part.draw(48); break; // Small blast
+            case 6: part.draw(89); break; // Missile
             }
             c.restore();
         }
@@ -415,6 +416,21 @@ function frag(pos, rot, own, typ, sub, del, spd) {
         if(this.lif) {
             this.lif -= spd;
             if(this.lif) {
+                
+                // Missiles follow target and accelerate
+                if(this.typ == 6) {
+                    if(a[this.sub].sys) {
+                        var relative = { x: a[this.sub].pos.x - this.pos.x, y: a[this.sub].pos.y - this.pos.y };
+                        var normal = { x: Math.cos(this.rot), y: Math.sin(this.rot) };
+                        var dot = relative.x * -normal.y + relative.y * normal.x;
+                        if(dot < 0) this.del = -0.1;
+                        else this.del = 0.1;
+                        this.spd.x += Math.cos(this.rot) * 2.0 * spd;
+                        this.spd.y += Math.sin(this.rot) * 2.0 * spd;
+                        this.spd.x *= 1.0 - 0.01 * spd;
+                        this.spd.y *= 1.0 - 0.01 * spd;
+                    } else this.lif = 0;
+                }
                 
                 // Movement
                 this.pos.x += this.spd.x * spd;
@@ -431,10 +447,18 @@ function frag(pos, rot, own, typ, sub, del, spd) {
                 var prt;
                 var partid;
                 var damage;
-                if((this.typ == 0 || this.typ == 4 || this.typ == 5) && !waitforit) for(var i = 0; i < a.length; i++) if(i != this.own && a[i].pts && this.lif > 0) {
+                if((this.typ == 0 || this.typ == 4 || this.typ == 5 || this.typ == 6) && !waitforit) for(var i = 0; i < a.length; i++) if(i != this.own && a[i].pts && this.lif > 0) {
                     
                     // Check if bullet is even near this ship
                     if(this.pos.x < a[i].pos.x + 50 && this.pos.x > a[i].pos.x - 50 && this.pos.y < a[i].pos.y + 50 && this.pos.y > a[i].pos.y - 50) {
+                        
+                        // Missiles explode here
+                        if(this.typ == 6) {
+                            this.lif = 0;
+                            for(var u = 0; u < 15; u++) b.push(new frag(
+                                { x: this.pos.x, y: this.pos.y },
+                                Math.random() * Math.PI * 2.0, -1, 7));
+                        }
                         
                         // Check what part of ship is hit
                         pdis = 1000;
@@ -508,6 +532,12 @@ function frag(pos, rot, own, typ, sub, del, spd) {
         case 3: this.lif = 150 + Math.random() * 150.0; break; // Ship part
         case 4: this.lif = 90 + Math.random() * 20.0; break; // Big blast
         case 5: this.lif = 90 + Math.random() * 20.0; break; // Small blast
+        case 6: this.lif = 100.0; break; // Missile
+        case 7: // Missile explosion
+            this.typ = Math.floor(Math.random() * 1.3);
+            this.lif = 10 + Math.random() * 15.0;
+            spd = { x: Math.cos(this.rot) * 10, y: Math.sin(this.rot) * 10 };
+            break;
         }
         if(spd) this.spd = spd;
         else switch(this.typ) {
@@ -530,6 +560,10 @@ function frag(pos, rot, own, typ, sub, del, spd) {
         case 5: // Small blast
             this.spd.x = Math.cos(this.rot) * 30;
             this.spd.y = Math.sin(this.rot) * 30;
+            break;
+        case 6: // Missile
+            this.spd.x = 0;
+            this.spd.y = 0;
             break;
         }
     }
@@ -1111,9 +1145,9 @@ function ship(pos, rot, typ, col) {
             // Friction (I know, it's fake space)
             //  * Apply drifting for crippled ships, though
             if(this.sys && this.acc) {
-                this.spd.x *= 0.97;
-                this.spd.y *= 0.97;
-                this.del *= 0.9;
+                this.spd.x *= 1.0 - 0.03 * spd;
+                this.spd.y *= 1.0 - 0.03 * spd;
+                this.del *= 1.0 - 0.1 * spd;
             }
             
             // Shooting
@@ -1424,6 +1458,11 @@ function ship(pos, rot, typ, col) {
                     this.missile_lock -= spd;
                     if(this.missile_lock <= 0) {
                         this.missiles--;
+//                         pos, rot, own, typ, sub, del, spd
+                        b.push(new frag(
+                            { x: this.pos.x, y: this.pos.y },
+                            this.rot, self_i, 6, this.trg
+                        ));
                         if(followed) ismissiling = 0;
                     }
                 } else this.missile_lock =0;
