@@ -1102,10 +1102,10 @@ function ship(pos, rot, typ, col) {
                             ctest.speed = ctest.normal.x * this.spd.x + ctest.normal.y * this.spd.y;
                             ctest.speed -= ctest.normal.x * a[i].spd.x + ctest.normal.y * a[i].spd.y;
                             if(ctest.speed > 5.0) {
-                                this.spd.x -= ctest.normal.x * ctest.speed;
-                                this.spd.y -= ctest.normal.y * ctest.speed;
-                                a[i].spd.x += ctest.normal.x * ctest.speed;
-                                a[i].spd.y += ctest.normal.y * ctest.speed;
+                                this.spd.x -= ctest.normal.x * ctest.speed * 0.8;
+                                this.spd.y -= ctest.normal.y * ctest.speed * 0.8;
+                                a[i].spd.x += ctest.normal.x * ctest.speed * 0.8;
+                                a[i].spd.y += ctest.normal.y * ctest.speed * 0.8;
                                 
                                 // Damage parts that hit each other
                                 ctest.damage = Math.random() * ctest.speed * 0.2;
