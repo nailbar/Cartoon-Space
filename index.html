@@ -27,7 +27,9 @@ var ismissiling = 0;
 var trg = {x: 0, y: 0};
 var hud = {
     'shields': 0,
-    'weapons': 0
+    'weapons': 0,
+    'score': 0,
+    'best_score': 0
 }
 var reticle = false;
 
@@ -390,6 +392,7 @@ function frag(pos, rot, own, typ, sub, del, spd) {
     this.own = 0;
     this.typ = 0;
     this.sub = "";
+    this.pass = 0; // Pass through mode for bullets
     
     // Function for drawing this frag
     this.drawFrag = function() {
@@ -415,6 +418,7 @@ function frag(pos, rot, own, typ, sub, del, spd) {
         var spd = (ispaused ? 0.1 : 1.0);
         if(this.lif) {
             this.lif -= spd;
+            this.pass -= spd;
             if(this.lif) {
                 
                 // Missiles follow target and accelerate
@@ -447,7 +451,7 @@ function frag(pos, rot, own, typ, sub, del, spd) {
                 var prt;
                 var partid;
                 var damage;
-                if((this.typ == 0 || this.typ == 4 || this.typ == 5 || this.typ == 6) && !waitforit) for(var i = 0; i < a.length; i++) if(i != this.own && a[i].pts && this.lif > 0) {
+                if((this.typ == 0 || this.typ == 4 || this.typ == 5 || this.typ == 6) && !waitforit) for(var i = 0; i < a.length; i++) if(this.pass <= 0 && a[i].pts && this.lif > 0) {
                     
                     // Check if bullet is even near this ship
                     if(this.pos.x < a[i].pos.x + 50 && this.pos.x > a[i].pos.x - 50 && this.pos.y < a[i].pos.y + 50 && this.pos.y > a[i].pos.y - 50) {
@@ -507,6 +511,12 @@ function frag(pos, rot, own, typ, sub, del, spd) {
                                     ));
                                     a[i].p[prt].hlt = 0;
                                 }
+                                
+                                // If owner is player and ship it is enemy of player, count damage as score
+                                if(this.own == camid && hascontrol) if(a[i].col != a[camid].col) {
+                                    hud.score += Math.floor(damage * 10.0);
+                                    if(hud.score > hud.best_score) hud.best_score = hud.score;
+                                }
                             }
                         }
                     }
@@ -515,7 +525,7 @@ function frag(pos, rot, own, typ, sub, del, spd) {
                 // Missile always explodes at the end
                 if(this.lif < 2 && this.typ == 6) for(var u = 0; u < 15; u++) b.push(new frag(
                     { x: this.pos.x, y: this.pos.y },
-                    Math.random() * Math.PI * 2.0, -1, 7));
+                    Math.random() * Math.PI * 2.0, this.own, 7));
             }
         }
     }
@@ -528,13 +538,13 @@ function frag(pos, rot, own, typ, sub, del, spd) {
         if(sub) this.sub = sub;
         if(del) this.del = del;
         switch(this.typ) {
-        case 0: this.lif = 90 + Math.random() * 20.0; break; // Blast
+        case 0: this.lif = 90 + Math.random() * 20.0; this.pass = 3.0; break; // Blast
         case 1: this.lif = 15 + Math.random() * 10.0; break; // Explosion
         case 2: this.lif = 7 + Math.random() * 3.0; break; // Engine fire
         case 3: this.lif = 150 + Math.random() * 150.0; break; // Ship part
-        case 4: this.lif = 90 + Math.random() * 20.0; break; // Big blast
-        case 5: this.lif = 90 + Math.random() * 20.0; break; // Small blast
-        case 6: this.lif = 200.0; if(this.sub == "") this.sub = 0; break; // Missile
+        case 4: this.lif = 90 + Math.random() * 20.0; this.pass = 3.0; break; // Big blast
+        case 5: this.lif = 90 + Math.random() * 20.0; this.pass = 3.0; break; // Small blast
+        case 6: this.lif = 200.0; if(this.sub == "") this.sub = 0; this.pass = 20.0; break; // Missile
         case 7: // Missile explosion
             this.typ = Math.floor(Math.random() * 1.3);
             this.lif = 10 + Math.random() * 15.0;
@@ -1578,6 +1588,7 @@ function loop() {
             }
             b = new Array();
             camid = Math.floor(Math.random() * 3);
+            hud.score = 0;
             cam.x += (a[camid].pos.x - cam.x) * 0.1;
             cam.y += (a[camid].pos.y - cam.y) * 0.1;
             zoomtrg = 1.0;
@@ -1596,6 +1607,7 @@ function loop() {
     //  * camid selects a healthy ship
     if(!a[camid].sys || !a[camid].gns || !a[camid].acc) {
         camid = Math.floor(Math.random() * a.length);
+        hud.score = 0;
         waitcam = 50; // Wait 50 framse until view switch
         hascontrol = 0;
     } else if(waitcam < 1) {
@@ -1667,9 +1679,12 @@ function loop() {
     }
     c.fillStyle = "#3c0";
     c.fillRect(10, 25, hud.weapons * 5.0, 8);
-        c.fillStyle = "#c90";
+    c.fillStyle = "#c90";
     if(a[camid].missile_lock > 0) c.fillRect(10, 40, a[camid].missile_lock * 5.0, 8);
     for(var i = 0; i < a[camid].missiles; i++) c.fillRect(10 + i * 15, 55, 8, 8);
+    c.fillStyle = "#bbb";
+    c.font="12px Arial";
+    c.fillText("Score: " + hud.score + " (best: " + hud.best_score + ")", 10, 80);
     
     // Restart game
     var multi = 0;
@@ -1731,7 +1746,7 @@ function stopkeyinput(e) {
         if(a[camid].trg == camid) a[camid].trg++;
         if(a[camid].trg >= a.length) a[camid].trg = 0;
         break;
-    case 78: camid++; if(camid >= a.length) camid = 0; break; // N for next ship
+    case 78: camid++; if(camid >= a.length) camid = 0; hud.score = 0; break; // N for next ship
     case 80: ispaused = (ispaused ? false : true); break; // P for pause, which is actually just slow motion toggle
     case 81: isshooting = false; break;
     case 73: isaccelerating = false; break;
